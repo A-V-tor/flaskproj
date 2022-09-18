@@ -13,7 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://a-v-tor@localhost/mybase'
 db = SQLAlchemy(app)
 
 
-class User(db.Model):
+class Userprofile(db.Model):
     '''Модель юзера'''
     id = db.Column(db.Integer, primary_key=True)
     mail = db.Column(db.String(100))
@@ -28,10 +28,10 @@ def index_registration():
     forma = FormRegAvt()
     if forma.validate_on_submit():
         try:
-            u = User(mail=forma.email.data, name=forma.name.data, psw=forma.psw.data)
+            u = Userprofile(mail=forma.email.data, name=forma.name.data, psw=forma.psw.data)
             db.session.add(u)
             db.session.commit()
-            print('YES')
+            print('ЗАПИСЬ СДЕЛАНА')
         except:
             print('ОШИБКА ЗАПИСИ')
     return render_template('forma_registration.html', forma=forma, title='Регистрация')
