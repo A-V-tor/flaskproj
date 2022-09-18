@@ -1,26 +1,8 @@
-import os
-from flask import Flask, render_template, request, url_for
-from forms import FormRegAvt
-from flask_sqlalchemy import SQLAlchemy
-import psycopg2
+from .forms import FormRegAvt
+from flask import render_template, request, url_for
+from flaskproj import app,db
+from .models import Userprofile
 
-
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(12)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://a-v-tor@localhost/mybase'
-
-db = SQLAlchemy(app)
-
-
-class Userprofile(db.Model):
-    '''Модель юзера'''
-    id = db.Column(db.Integer, primary_key=True)
-    mail = db.Column(db.String(100))
-    name = db.Column(db.String(100))
-    psw = db.Column(db.String(300))
-
-db.create_all()
 
 @app.route('/', methods=['POST', 'GET'])
 def index_registration():
@@ -31,9 +13,9 @@ def index_registration():
             u = Userprofile(mail=forma.email.data, name=forma.name.data, psw=forma.psw.data)
             db.session.add(u)
             db.session.commit()
-            print('ЗАПИСЬ СДЕЛАНА')
+            print('ЮЗЕР ЗАЛОГИНИН')
         except:
-            print('ОШИБКА ЗАПИСИ')
+            print('ОШИБКА ЗАПИСИ ЛОГИНА')
     return render_template('forma_registration.html', forma=forma, title='Регистрация')
 
 
@@ -49,5 +31,3 @@ def index_avtorization():
 
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
