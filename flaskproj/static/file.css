@@ -1,0 +1,12 @@
+.registr {
+    margin-left: 32%;
+    margin-top: 10%;
+}
+
+label {
+    display: block;
+    float: left;
+    width: 170px;
+    height: 15px;
+    
+}

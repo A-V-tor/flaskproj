@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+   <h2>
+      <center>Регистрация</center>
+   </h2>
+   <form action="#" method="post" class="registr">
+      {{forma.hidden_tag()}}
+      {{ forma.email.label() }} {{ forma.email() }}
+      </br>
+      {{ forma.name.label() }} {{ forma.name() }}
+      </br>
+      {{ forma.remember.label() }} {{ forma.remember() }}
+      </br>
+      {{ forma.psw.label }} {{ forma.psw() }}
+      </br>
+      {{ forma.submit() }}
+   </form>
+   {% endblock %}
