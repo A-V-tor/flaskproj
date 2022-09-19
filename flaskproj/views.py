@@ -13,7 +13,7 @@ def index_main():
     return render_template('main.html', title='Главная страница')
 
 
-@app.route('/1', methods=['POST', 'GET'])
+@app.route('/registration', methods=['POST', 'GET'])
 def index_registration():
     '''Обработка регистрации'''
     forma = FormRegAvt()
@@ -32,7 +32,7 @@ def index_registration():
     return render_template('forma_registration.html', forma=forma, title='Регистрация')
 
 
-@app.route('/2', methods=['POST', 'GET'])
+@app.route('/avtorization', methods=['POST', 'GET'])
 def index_avtorization():
     '''Обработка авторизации'''
     forma = FormRegAvt()

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% include 'navbar.html' %}
 {% block content %}
 <h2><center>Авторизация</center></h2>
  <form action="#" method="post" class="registr">
@@ -10,5 +11,6 @@
 </br>
 <p> <center>{{ forma.remember.label() }} {{ forma.remember() }}</center>
 <p>{{ forma.submit() }}
+</p ><center><a href="/registration" class="reg">Регистрация</a></center>
  </form>
 {% endblock %} 
