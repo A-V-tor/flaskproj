@@ -1,4 +1,4 @@
-
+/* показ невалидного email */
 .invalid-1 {
     color: rgb(199, 32, 32);
 }
@@ -7,53 +7,75 @@
     background-color: rgb(224, 224, 36);
 }
 
+/* формы регистрации и авторизации */
 .registr {
-    width:340px;
-    height:440px;
-    background:#e6e6e6;
-    border-radius:18px;
-    box-shadow:0 0 40px -10px #000;
-    margin:calc(50vh - 220px) auto;
-    padding:20px 30px;max-width:calc(100vw - 40px);
-    box-sizing:border-box;
-    font-family:'Montserrat',sans-serif;
-    position:relative
+    width: 340px;
+    height: 440px;
+    background: #e6e6e6;
+    border-radius: 18px;
+    box-shadow: 0 0 40px -10px #000;
+    margin: calc(50vh - 220px) auto;
+    padding: 20px 30px;
+    max-width: calc(100vw - 40px);
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+    position: relative
 }
 
 .reg {
-    position:absolute;
-    bottom:-45px;right:10px;
-    background:#50505a;
-    color:#fff;width:320px;
-    padding:16px 4px 16px 0;
-    border-radius:6px;font-size:13px;
-    box-shadow:10px 10px 40px -14px #000
+    position: absolute;
+    bottom: -45px;
+    right: 10px;
+    background: #50505a;
+    color: #fff;
+    width: 320px;
+    padding: 16px 4px 16px 0;
+    border-radius: 6px;
+    font-size: 13px;
+    box-shadow: 10px 10px 40px -14px #000
 }
 
 
 
-input{
-    width:100%;
-    padding:10px;
-    box-sizing:border-box;
-    background:none;
-    outline:none;resize:none;
-    border:0;
-    font-family:'Montserrat',sans-serif;
-    transition:all .3s;
-    border-bottom:2px solid #bebed2;
+input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background: none;
+    outline: none;
+    resize: none;
+    border: 0;
+    font-family: 'Montserrat', sans-serif;
+    transition: all .3s;
+    border-bottom: 2px solid #bebed2;
     border-radius: 10px;
 }
+
 input:focus {
-    border-bottom:2px solid #78788c
+    border-bottom: 2px solid #78788c
 }
 
 p:before {
-    content:attr(type);
-    display:block;margin:28px 0 0;
-    font-size:14px;color:#5a5a5a
+    content: attr(type);
+    display: block;
+    margin: 28px 0 0;
+    font-size: 14px;
+    color: #5a5a5a
 }
 
 .remember {
     margin-top: 0%;
+}
+
+/* flash сообщения */
+.flash.error {
+    border-radius: 20px;
+    border: 1px solid #23f25e;
+    background: #b5ec56;
+    width: 30%;
+    margin: auto;
+    border-bottom: 2px solid #b5ec56;
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
+    box-shadow: 0 0 40px 10px #000;
 }

@@ -2,7 +2,10 @@
 {% include 'navbar.html' %}
 {% block content %}
 <h2><center>Авторизация</center></h2>
- <form action="#" method="post" class="registr">
+{% for i, msg in get_flashed_messages(True) %}
+  <div class="flash {{i}}"><center>{{msg}}</center></div>
+{% endfor %}
+ <form action="/avtorization" method="post" class="registr">
     <p>{{forma.hidden_tag()}}
  </br>
  <p>{{ forma.name.label() }} {{ forma.name(placeholder='Введите имя') }}
