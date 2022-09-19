@@ -3,7 +3,7 @@ from flask_bootstrap import Bootstrap
 from flask import render_template, request, url_for, redirect, flash, session, abort
 from .forms import FormReg, FormAvt
 from flaskproj import app,db
-from .models import Userprofile
+from .models import Userprofile, Product
 
 
 Bootstrap(app)
@@ -11,11 +11,16 @@ Bootstrap(app)
 @app.route('/', methods=['POST', 'GET'])
 def index_main():
     '''Обработка главной страницы'''
+    data_product = Product.query.filter_by().all()
+    print(data_product)
     if 'username' in session:
         print('SESSIN YES')
         username = session['username']
-        return render_template('main.html', title='Главная страница', name=username)
-    return render_template('main.html', title='Главная страница')
+        bascet = True
+        if request.method == 'POST':
+            print('button',[i for i in request.form.values()])
+        return render_template('main.html', title='Главная страница', name=username, data_product=data_product, bascet=bascet)
+    return render_template('main.html', title='Главная страница', data_product=data_product)
 
 
 @app.route('/registration', methods=['POST', 'GET'])
@@ -48,11 +53,11 @@ def index_avtorization():
         datauser = Userprofile.query.filter_by(name=forma.name.data,psw=forma.psw.data).first()
         print(datauser)
         if datauser:
+            session['mail'] = datauser.mail
             session['username'] = datauser.name
             return redirect(url_for('index_shopping_basket', username=session['username']))
         else:
             flash('Неверное имя или пароль!', category='error')
-
     return render_template('forma_avtorization.html', forma=forma, title='Авторизация')
 
 
@@ -61,7 +66,14 @@ def index_shopping_basket(username):
     if 'username' not in session or session['username'] != username:
         print('hujnj')
         return redirect(url_for('index_avtorization'))
-    return render_template('basket.html', name=username)
+    else:
+        mail = session['mail']
+        return render_template('basket.html', name=username, mail=mail)
+
+
+@app.errorhandler(404)
+def pageNot(error):
+    return redirect(url_for('index_avtorization'))
 
 
 

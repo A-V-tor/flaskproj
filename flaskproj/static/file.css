@@ -79,3 +79,15 @@ p:before {
     font-family: 'Montserrat', sans-serif;
     box-shadow: 0 0 40px 10px #000;
 }
+
+/* главная страница */
+
+.name-product {
+    color: #090a11e0;
+    font-size: 18px;
+    font-family: 'Montserrat', sans-serif;
+    
+}
+
+
+ 

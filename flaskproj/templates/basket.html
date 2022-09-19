@@ -1,6 +1,34 @@
 {% extends 'base.html' %}
 {% block content %}
 {% include 'navbar.html' %}
- <h1>корзина покупок {{name}}</h1>
+ <h1>корзина товаров {{name}}</h1>
+ <h4>{{mail}}</h4>
+</br>
+ <table class="table">
+    <thead>
+    <tr>
+    <th colspan="2">Товар</th>
+    <th><div class="">Фото</div></th>
+    <th><div class="">Количество</div></th>
+    <th><div class="">Цена (1 ед)</div></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td class="">Наушники &nbsp;</td>
+    <td class=""> &nbsp; </td>
+    <td class=""><img src="/static/1.jpg" alt="" width="124" height="124"/></td>
+    <td class="">
+    <input type="text" class="" value="1"/>
+    </td>
+    <td class="">
+    $59
+    </tr>
+    <tr>
+        <td class="">Итого: </td>
+        <td class=""><div class=""> x $</div></td>
+    </tr>
+    </tbody>
+    </table>
 {% endblock %} 
 
