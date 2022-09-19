@@ -1,6 +1,5 @@
-import os
-from flaskproj import app,db
-from flaskproj.models import Userprofile
+from flaskproj import app
+
 
 
 

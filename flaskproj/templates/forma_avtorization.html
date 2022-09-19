@@ -2,14 +2,13 @@
 {% block content %}
 <h2><center>Авторизация</center></h2>
  <form action="#" method="post" class="registr">
-    {{forma.hidden_tag()}}
+    <p>{{forma.hidden_tag()}}
  </br>
-    {{ forma.name.label() }} {{ forma.name() }}
- </br>
-    {{ forma.remember.label() }} {{ forma.remember() }}
+ <p>{{ forma.name.label() }} {{ forma.name(placeholder='Введите имя') }}
 </br>
-   {{ forma.psw.label }} {{ forma.psw() }}
+<p>{{ forma.psw.label }} {{ forma.psw(placeholder='Введите пароль') }}
 </br>
-    {{ forma.submit() }}
+<p> <center>{{ forma.remember.label() }} {{ forma.remember() }}</center>
+<p>{{ forma.submit() }}
  </form>
 {% endblock %} 
