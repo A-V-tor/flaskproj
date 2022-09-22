@@ -1,9 +1,8 @@
-import re
 from flask_bootstrap import Bootstrap
 from flask import render_template, request, url_for, redirect, flash, session, abort
 from .forms import FormReg, FormAvt
 from flaskproj import app,db
-from .models import Userprofile, Product
+from .models import Userprofile, Product, Bascet
 
 
 Bootstrap(app)
@@ -14,11 +13,14 @@ def index_main():
     data_product = Product.query.filter_by().all()
     print(data_product)
     if 'username' in session:
-        print('SESSIN YES')
         username = session['username']
         bascet = True
         if request.method == 'POST':
-            print('button',[i for i in request.form.values()])
+            name_product = [i for i in request.form.values()]
+            print('button',*name_product)
+            bascet_write = Bascet(user_id=int(session['name_id']),product_id=int(*name_product))
+            db.session.add(bascet_write)
+            db.session.commit()
         return render_template('main.html', title='Главная страница', name=username, data_product=data_product, bascet=bascet)
     return render_template('main.html', title='Главная страница', data_product=data_product)
 
@@ -55,6 +57,7 @@ def index_avtorization():
         if datauser:
             session['mail'] = datauser.mail
             session['username'] = datauser.name
+            session['name_id'] = datauser.id
             return redirect(url_for('index_shopping_basket', username=session['username']))
         else:
             flash('Неверное имя или пароль!', category='error')
@@ -64,11 +67,12 @@ def index_avtorization():
 @app.route('/basket/<username>', methods=['POST', 'GET'])
 def index_shopping_basket(username):
     if 'username' not in session or session['username'] != username:
-        print('hujnj')
         return redirect(url_for('index_avtorization'))
     else:
         mail = session['mail']
-        return render_template('basket.html', name=username, mail=mail)
+        personality = [i for i in Bascet.query.filter_by(user_id=session['name_id']).all()]
+        data_product = [Product.query.filter_by(id=i.product_id).first() for i in personality]
+        return render_template('basket.html', name=username, mail=mail, data_product=data_product)
 
 
 @app.errorhandler(404)

@@ -7,22 +7,24 @@
  <table class="table">
     <thead>
     <tr>
-    <th colspan="2">Товар</th>
+    <th >Товар</th>
+    <th><div class="">Описание</div></th>
     <th><div class="">Фото</div></th>
     <th><div class="">Количество</div></th>
     <th><div class="">Цена (1 ед)</div></th>
     </tr>
     </thead>
     <tbody>
+        {% for product in data_product%}
     <tr>
-    <td class="">Наушники &nbsp;</td>
-    <td class=""> &nbsp; </td>
-    <td class=""><img src="/static/1.jpg" alt="" width="124" height="124"/></td>
+    <td class=""></br>{{product.name}} &nbsp;</td>
+    <td class=""></br>{{product.product_story}} &nbsp;</td>
+    <td class=""><img src="{{product.image}}" alt="" width="124" height="124"/></td>
     <td class="">
     <input type="text" class="" value="1"/>
     </td>
-    <td class="">
-    $59
+    <td class=""></br>{{product.price}}</td>
+        {% endfor %}
     </tr>
     <tr>
         <td class="">Итого: </td>
@@ -30,5 +32,8 @@
     </tr>
     </tbody>
     </table>
+
+
+
 {% endblock %} 
 

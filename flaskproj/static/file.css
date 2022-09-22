@@ -86,8 +86,11 @@ p:before {
     color: #090a11e0;
     font-size: 18px;
     font-family: 'Montserrat', sans-serif;
+}
+
+.but-1 {
+    color: #78788c;
+    box-shadow: 0 0 50px 10px rgb(217, 211, 211);
     
 }
 
-
- 
