@@ -5,19 +5,22 @@ from flaskproj import app,db
 from .models import Userprofile, Product, Bascet
 
 
+
 Bootstrap(app)
 
 @app.route('/', methods=['POST', 'GET'])
 def index_main():
     '''Обработка главной страницы'''
     data_product = Product.query.filter_by().all()
-    print(data_product)
     if 'username' in session:
         username = session['username']
         bascet = True
         if request.method == 'POST':
             name_product = [i for i in request.form.values()]
             print('button',*name_product)
+            limit_entries = Bascet.query.filter_by(user_id=int(session['name_id']),product_id=int(*name_product)).all()
+            if len(limit_entries) > 0:
+                return render_template('main.html', title='Главная страница', name=username, data_product=data_product, bascet=bascet)
             bascet_write = Bascet(user_id=int(session['name_id']),product_id=int(*name_product))
             db.session.add(bascet_write)
             db.session.commit()
@@ -36,16 +39,14 @@ def index_registration():
             user = Userprofile(mail=forma.email.data, name=forma.name.data, psw=forma.psw.data)
             db.session.add(user)
             db.session.commit()
-            print('ЮЗЕР ЗАЛОГИНИН')
         except:
             flash('Пользователь с таким адресом уже есть!', category='error')
-            print('ОШИБКА ЗАПИСИ ЛОГИНА')
-        return redirect(url_for('index_avtorization')) 
+        return redirect(url_for('index_autorization')) 
     return render_template('forma_registration.html', forma=forma, title='Регистрация')
 
 
-@app.route('/avtorization', methods=['POST', 'GET'])
-def index_avtorization():
+@app.route('/autorization', methods=['POST', 'GET'])
+def index_autorization():
     '''Обработка авторизации'''
     forma = FormAvt()
     if 'username'  in session:
@@ -61,13 +62,13 @@ def index_avtorization():
             return redirect(url_for('index_shopping_basket', username=session['username']))
         else:
             flash('Неверное имя или пароль!', category='error')
-    return render_template('forma_avtorization.html', forma=forma, title='Авторизация')
+    return render_template('forma_autorization.html', forma=forma, title='Авторизация')
 
 
 @app.route('/basket/<username>', methods=['POST', 'GET'])
 def index_shopping_basket(username):
     if 'username' not in session or session['username'] != username:
-        return redirect(url_for('index_avtorization'))
+        return redirect(url_for('index_autorization'))
     else:
         mail = session['mail']
         personality = [i for i in Bascet.query.filter_by(user_id=session['name_id']).all()]
@@ -77,7 +78,7 @@ def index_shopping_basket(username):
 
 @app.errorhandler(404)
 def pageNot(error):
-    return redirect(url_for('index_avtorization'))
+    return redirect(url_for('index_autorization'))
 
 
 
