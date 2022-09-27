@@ -73,6 +73,14 @@ def index_shopping_basket(username):
         mail = session['mail']
         personality = [i for i in Bascet.query.filter_by(user_id=session['name_id']).all()]
         data_product = [Product.query.filter_by(id=i.product_id).first() for i in personality]
+        if 'productremove' in request.form:
+            print(*[i for i in request.form.values()])
+            id_product = [i for i in request.form.values()]
+            remove_product = Bascet.query.filter_by(user_id=int(session['name_id']),product_id=int(*id_product)).first()
+            print(remove_product)
+            db.session.delete(remove_product)
+            db.session.commit()
+            return redirect(url_for('index_shopping_basket', username=session['username']))
         return render_template('basket.html', name=username, mail=mail, data_product=data_product)
 
 
