@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<h2>
+    <center>Добавление карты оплаты</center>
+</h2>
+{% if yes %}
+    <div class="add-card">
+        <center><h2>Ваша карта уже добавлена!</h2></center>
+        <form action="#" method="post">
+            <button type="submit" name="Exit" value='Exit' class="but-1">Закрыть</button></form>
+    </div>
+{% endif %}
+{% for i, msg in get_flashed_messages(True) %}
+<div class="flash {{i}}">
+  <center>{{msg}}</center>
+</div>
+{% endfor %}
+ <form action="#" method="post" class="registr-2">
+    {{forma.hidden_tag()}}
+    {{ forma.number_card.label() }} {{ forma.number_card(placeholder='**** **** **** ****') }}
+    {{ forma.validity.label() }} {{ forma.validity(placeholder='**/**') }}
+    {{ forma.secret_code.label() }} {{ forma.secret_code(placeholder='***') }}
+    {{ forma.surname.label() }} {{ forma.surname(placeholder='Иванов') }}
+    {{ forma.firstname.label() }} {{ forma.firstname(placeholder='Иван') }}
+    {{ forma.patronymic.label() }} {{ forma.patronymic(placeholder='Иванович') }}
+</br>
+    {{ forma.submit() }}
+ </form>
+ 
+{% endblock %} 

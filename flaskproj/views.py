@@ -1,9 +1,10 @@
+from audioop import add
 from flask_bootstrap import Bootstrap
 from flask import render_template, request, url_for, redirect, flash, session, abort
-from .forms import FormReg, FormAvt
+from .forms import FormReg, FormAvt, FormAddCard
 from flaskproj import app,db
-from .models import Userprofile, Product, Bascet
-
+from .models import Userprofile, Product, Bascet, Usercard
+from .other import add_balance
 
 
 Bootstrap(app)
@@ -20,11 +21,11 @@ def index_main():
             print('button',*name_product)
             limit_entries = Bascet.query.filter_by(user_id=int(session['name_id']),product_id=int(*name_product)).all()
             if len(limit_entries) > 0:
-                return render_template('main.html', title='Главная страница', name=username, data_product=data_product, bascet=bascet)
+                return render_template('main.html', title='Главная страница', name=username, data_product=data_product, bascet=bascet, username = session['username'])
             bascet_write = Bascet(user_id=int(session['name_id']),product_id=int(*name_product))
             db.session.add(bascet_write)
             db.session.commit()
-        return render_template('main.html', title='Главная страница', name=username, data_product=data_product, bascet=bascet)
+        return render_template('main.html', title='Главная страница', name=username, data_product=data_product, bascet=bascet, username = session['username'])
     return render_template('main.html', title='Главная страница', data_product=data_product)
 
 
@@ -52,7 +53,6 @@ def index_autorization():
     if 'username'  in session:
         return redirect(url_for('index_shopping_basket', username=session['username']))
     if forma.validate_on_submit():
-        print('forma arbeit')
         datauser = Userprofile.query.filter_by(name=forma.name.data,psw=forma.psw.data).first()
         print(datauser)
         if datauser:
@@ -73,15 +73,44 @@ def index_shopping_basket(username):
         mail = session['mail']
         personality = [i for i in Bascet.query.filter_by(user_id=session['name_id']).all()]
         data_product = [Product.query.filter_by(id=i.product_id).first() for i in personality]
+        balance = Usercard.query.filter_by(user_id=int(session['name_id'])).first()
+        if 'Exit' in request.form:
+            return render_template('basket.html', name=username, mail=mail, data_product=data_product, username=username, title='Корзина товаров', balance=balance)
         if 'productremove' in request.form:
-            print(*[i for i in request.form.values()])
             id_product = [i for i in request.form.values()]
-            remove_product = Bascet.query.filter_by(user_id=int(session['name_id']),product_id=int(*id_product)).first()
-            print(remove_product)
-            db.session.delete(remove_product)
+            product_for_remove = Bascet.query.filter_by(user_id=int(session['name_id']),product_id=int(*id_product)).first()
+            db.session.delete(product_for_remove)
             db.session.commit()
             return redirect(url_for('index_shopping_basket', username=session['username']))
-        return render_template('basket.html', name=username, mail=mail, data_product=data_product)
+        if 'makepurchase' in request.form:
+            try:
+                lst_amount = request.form.getlist('amountproduct')
+                data_order = zip([int(i) for i in request.form['makepurchase'].split()],[int(i) for i in lst_amount])
+                total_price  = sum([i[0]*i[1] for i in [i for i in data_order ]])
+            except:
+                total_price = 'Ошибка'
+            finally:
+                return render_template('basket.html', name=username, mail=mail, data_product=data_product,u=total_price, username=username, title='Корзина товаров', balance=balance)
+        return render_template('basket.html', name=username, mail=mail, data_product=data_product, username=username, title='Корзина товаров', balance=balance)
+
+
+@app.route('/add-card/<username>', methods=['POST', 'GET'])
+def index_card(username):
+    if 'username' not in session or session['username'] != username:
+        return redirect(url_for('index_autorization'))
+    forma = FormAddCard()
+    if forma.validate_on_submit():
+        limit_entries = Usercard.query.filter_by(user_id=int(session['name_id'])).all()
+        if len(limit_entries) > 0:
+            return render_template('card_index.html', username=username, forma=forma, title='Привязка карты', yes='1') 
+        number_card, validity, secret_code, surname, firstname, patronymic = [i for i in request.form.values()][1:-1]
+        card = Usercard(user_id=int(session['name_id']), surname=surname, firstname=firstname, patronymic=patronymic, number_card=number_card, validity=validity, secret_code=secret_code, balance=add_balance())
+        try:
+            db.session.add(card)
+            db.session.commit()
+        except:
+            flash('Неккоректное заполнение', category='error')
+    return render_template('card_index.html', username=username, forma=forma, title='Привязка карты')
 
 
 @app.errorhandler(404)

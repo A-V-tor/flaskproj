@@ -1,42 +1,69 @@
 {% extends 'base.html' %}
 {% block content %}
 {% include 'navbar.html' %}
- <h1>корзина товаров {{name}}</h1>
- <h4>{{mail}}</h4>
+<h1>корзина товаров {{name}}</h1>
+<h4>{{mail}}</h4>
+<h3>Баланс: {{balance.balance}}</h3>
 </br>
- <table class="table">
+{% if u %}
+    <div class="order-basc">
+        <center><h2>Итоговая цена: {{u}}</h2></center>
+         <h4>Заказ № оформлен</h4>
+        <form action="#" method="post">
+            <button type="submit" name="Exit" value='Exit' class="but-1">Закрыть</button></form>
+    </div>
+{% endif %}
+<div>
+<table class="table">
     <thead>
-    <tr>
-    <th >Товар</th>
-    <th><div class="">Описание</div></th>
-    <th><div class="">Фото</div></th>
-    <th><div class="">Количество</div></th>
-    <th><div class="">Цена (1 ед)</div></th>
-    </tr>
+        <tr>
+            <th>Товар</th>
+            <th>
+                <div class="">Описание</div>
+            </th>
+            <th>
+                <div class="">Фото</div>
+            </th>
+            <th>
+                <div class="">Количество</div>
+            </th>
+            <th>
+                <div class="">Цена (1 ед)</div>
+            </th>
+            <th>
+                <div class="">Удалить товар</div>
+            </th>
+        </tr>
     </thead>
     <tbody>
+        
         {% for product in data_product%}
-    <tr>
-    <td class=""></br>{{product.name}} &nbsp;</td>
-    <td class=""></br>{{product.product_story}} &nbsp;</td>
-    <td class=""><img src="{{product.image}}" alt="" width="124" height="124"/></td>
-    <td class="">
-    <input type="text" class="" value="1"/>
-    </td>
-    <td class=""></br>{{product.price}}</td>
-    <form  action="#" method="post">
-        <td></br><button type="submit" name="productremove" value="{{product.id}}" class="but-1">Удалить &nbsp; </button></td>
-    </form>
-        {% endfor %}
-    </tr>
-    <tr>
-        <td class="">Итого: </td>
-        <td class=""><div class=""> x $</div></td>
-    </tr>
+        <tr>
+            <td class=""></br>{{product.name}} &nbsp;</td>
+            <td class=""></br>{{product.product_story}} &nbsp;</td>
+            <td class=""><img src="{{product.image}}" alt="" width="124" height="124" /></td>
+            <td class="">
+                <input type="text" class="" form="order" name="amountproduct" value="1" />
+            </td>
+            <td class=""></br>&nbsp;&nbsp;&nbsp;{{product.price}}</td>
+            <form action="#" method="post">
+                <td></br><button type="submit" name="productremove" value="{{product.id}}" class="but-1">Удалить &nbsp;
+                    </button></td>
+            </form>
+            {% endfor %}
+        </tr>
+        <tr>
+        </tr>
+        {% if data_product %}
+        <form action="#" method="post" id="order">
+            <!-- value  содержит цены товаров из корзины -->
+            <td></br><button type="submit" name="makepurchase"
+                    value="{% for product in data_product%}{{product.price}} {% endfor %}" class="but-1">Оформить заказ
+                    &nbsp; </button></td>
+        </form>
+        {% endif %}
     </tbody>
-    </table>
+</table>
+</div>
 
-
-
-{% endblock %} 
-
+{% endblock %}

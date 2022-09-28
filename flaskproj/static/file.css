@@ -22,6 +22,20 @@
     position: relative
 }
 
+.registr-2 {
+    width: 340px;
+    height: 540px;
+    background: #e6e6e6;
+    border-radius: 18px;
+    box-shadow: 0 0 40px -10px #000;
+    margin: calc(40vh - 220px) auto;
+    padding: 20px 30px;
+    max-width: calc(100vw - 40px);
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+    position: relative
+}
+
 .reg {
     position: absolute;
     bottom: -45px;
@@ -91,6 +105,25 @@ p:before {
 .but-1 {
     color: #78788c;
     box-shadow: 0 0 50px 10px rgb(217, 211, 211);
-    
 }
 
+
+.order-basc {
+    margin-left: 25%;
+    width: 50%;
+    height: 50%;
+    background-color: #a4e7f1;
+    position: absolute;
+    opacity: 0.9;
+    border-radius: 10px;
+}
+
+.add-card {
+    margin-left: 25%;
+    width: 50%;
+    height: 90%;
+    background-color: #a4e7f1;
+    position: relative;
+    opacity: 1.0;
+    border-radius: 10px;
+}
