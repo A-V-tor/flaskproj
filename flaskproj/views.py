@@ -1,9 +1,8 @@
-from audioop import add
 from flask_bootstrap import Bootstrap
 from flask import render_template, request, url_for, redirect, flash, session, abort
 from .forms import FormReg, FormAvt, FormAddCard
 from flaskproj import app,db
-from .models import Userprofile, Product, Bascet, Usercard
+from .models import Userprofile, Product, Bascet, Usercard, Orderuser
 from .other import add_balance
 
 
@@ -67,13 +66,19 @@ def index_autorization():
 
 @app.route('/basket/<username>', methods=['POST', 'GET'])
 def index_shopping_basket(username):
+    b = False
     if 'username' not in session or session['username'] != username:
         return redirect(url_for('index_autorization'))
     else:
         mail = session['mail']
         personality = [i for i in Bascet.query.filter_by(user_id=session['name_id']).all()]
         data_product = [Product.query.filter_by(id=i.product_id).first() for i in personality]
-        balance = Usercard.query.filter_by(user_id=int(session['name_id'])).first()
+        try:
+            balance = Usercard.query.filter_by(user_id=int(session['name_id'])).first().balance
+        except:
+            balance = 0
+        print('balance', balance)
+        
         if 'Exit' in request.form:
             return render_template('basket.html', name=username, mail=mail, data_product=data_product, username=username, title='Корзина товаров', balance=balance)
         if 'productremove' in request.form:
@@ -84,13 +89,26 @@ def index_shopping_basket(username):
             return redirect(url_for('index_shopping_basket', username=session['username']))
         if 'makepurchase' in request.form:
             try:
-                lst_amount = request.form.getlist('amountproduct')
-                data_order = zip([int(i) for i in request.form['makepurchase'].split()],[int(i) for i in lst_amount])
+                entries_for_order = zip([i.name for i in data_product],[i for i in request.form['makepurchase'].split()], [i for i in request.form.getlist('amountproduct')])
+                list_product = [i for i in entries_for_order]
+                data_order = zip([int(i) for i in request.form['makepurchase'].split()],[int(i) for i in request.form.getlist('amountproduct')])
                 total_price  = sum([i[0]*i[1] for i in [i for i in data_order ]])
+                if balance - total_price > 0 and total_price != 0:
+                    record = Usercard.query.filter_by(user_id=int(session['name_id'])).first()
+                    record.balance -= total_price
+                    write_order = Orderuser(user_id=int(session['name_id']), list_product=list_product, order_price=total_price)
+                    db.session.add(write_order)
+                    db.session.commit()
+                    
+                else:
+                    #record.balance = 1000
+                    #db.session.commit()
+                    print('hui')
+                    b = 'Не хватает денег!'
             except:
                 total_price = 'Ошибка'
             finally:
-                return render_template('basket.html', name=username, mail=mail, data_product=data_product,u=total_price, username=username, title='Корзина товаров', balance=balance)
+                return render_template('basket.html', name=username, mail=mail, data_product=data_product,u=total_price, username=username, title='Корзина товаров', balance=balance, nomany=b)
         return render_template('basket.html', name=username, mail=mail, data_product=data_product, username=username, title='Корзина товаров', balance=balance)
 
 

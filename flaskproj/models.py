@@ -1,3 +1,4 @@
+from datetime import datetime
 from flaskproj import db
 from sqlalchemy.orm import relationship
 from sqlalchemy import ForeignKey
@@ -11,6 +12,7 @@ class Userprofile(db.Model):
     psw = db.Column(db.String(300))
     user_bascet = relationship('Bascet')
     user_card = relationship('Usercard')
+    user_order = relationship('Orderuser')
 
 
 class Product(db.Model):
@@ -42,6 +44,16 @@ class Usercard(db.Model):
     validity = db.Column(db.String(5))
     secret_code = db.Column(db.String(4))
     balance = db.Column(db.Integer)
+
+
+class Orderuser(db.Model):
+    '''Модель исполненых заказов'''
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey('userprofile.id'))
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+    list_product = db.Column(db.String(500))
+    order_price = db.Column(db.Integer)
+
 
 
 db.create_all()
