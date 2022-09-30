@@ -3,7 +3,7 @@ from flask import render_template, request, url_for, redirect, flash, session, a
 from .forms import FormReg, FormAvt, FormAddCard
 from flaskproj import app,db
 from .models import Userprofile, Product, Bascet, Usercard, Orderuser
-from .other import add_balance
+from .other import add_balance, generation_item
 
 
 Bootstrap(app)
@@ -73,12 +73,11 @@ def index_shopping_basket(username):
         mail = session['mail']
         personality = [i for i in Bascet.query.filter_by(user_id=session['name_id']).all()]
         data_product = [Product.query.filter_by(id=i.product_id).first() for i in personality]
+        
         try:
             balance = Usercard.query.filter_by(user_id=int(session['name_id'])).first().balance
         except:
             balance = 0
-        print('balance', balance)
-        
         if 'Exit' in request.form:
             return render_template('basket.html', name=username, mail=mail, data_product=data_product, username=username, title='Корзина товаров', balance=balance)
         if 'productremove' in request.form:
@@ -98,14 +97,27 @@ def index_shopping_basket(username):
                     record.balance -= total_price
                     write_order = Orderuser(user_id=int(session['name_id']), list_product=list_product, order_price=total_price)
                     db.session.add(write_order)
-                    db.session.commit()
-                    
-                else:
+                    rm_bascet = Bascet.query.filter_by(user_id=int(session['name_id'])).all()
+                    [db.session.delete(i) for i in rm_bascet]
+                    v = generation_item([int(i[2]) for i in list_product])
+                    new_amount = [i.amount-next(v) for i in data_product]
+                    for j in [i for i in data_product]:
+                        if new_amount[0] > 0:
+                            j.amount = new_amount[0]
+                            new_amount = new_amount[1:]
+                            db.session.commit()
+                        elif new_amount[0] == 0:
+                            db.session.delete(j)
+                            db.session.commit()
+                        else:
+                            print('не хватает товара')
+                if balance - total_price < 0:
+                    print('hui')
                     #record.balance = 1000
                     #db.session.commit()
-                    print('hui')
                     b = 'Не хватает денег!'
             except:
+                print('ERROR')
                 total_price = 'Ошибка'
             finally:
                 return render_template('basket.html', name=username, mail=mail, data_product=data_product,u=total_price, username=username, title='Корзина товаров', balance=balance, nomany=b)

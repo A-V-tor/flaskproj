@@ -10,4 +10,11 @@ def add_balance():
     return res
 
 
+def generation_item(a):
+    for i in a:
+        yield i
+
+
+#print(next(generation_list(n)))
+#print(next(generation_list(n)))
 #print(add_balance())
