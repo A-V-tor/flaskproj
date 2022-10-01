@@ -2,6 +2,7 @@ from datetime import datetime
 from flaskproj import db
 from sqlalchemy.orm import relationship
 from sqlalchemy import ForeignKey
+#from flask_login import UserMixin
 
 
 class Userprofile(db.Model):
