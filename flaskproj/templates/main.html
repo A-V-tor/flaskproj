@@ -9,7 +9,7 @@
         <th><div class="">Цена</div></th>
         <th><div class="">Описание</div></th>
         <th><div class="">Количество</div></th>
-        {% if bascet %}
+        {% if current_user.is_authenticated %}
         <th><div class="">В корзину</div></th>
         {% endif %}
         </tr>
@@ -23,7 +23,7 @@
         <td class=""></br>{{i.price}} $ &nbsp; </td>
         <td class=""></br>{{i.product_story}} &nbsp; </td>
         <td class=""></br>{{i.amount}} &nbsp; </td>
-        {% if bascet %}
+        {% if current_user.is_authenticated %}
         <form  action="#" method="post">
         <td></br><button type="submit" name="productname" value="{{i.id}}" class="but-1">Добавить &nbsp; </button></td>
         </form>

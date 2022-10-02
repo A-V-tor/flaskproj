@@ -5,9 +5,9 @@
 <h4>{{mail}}</h4>
 <h3>Баланс: {{balance}}</h3>
 </br>
-{% if u %}
+{% if total_price %}
     <div class="order-basc">
-        <center><h2>Итоговая цена: {{u}}</h2></center>
+        <center><h2>Итоговая цена: {{total_price}}</h2></center>
          <h4>Заказ № оформлен</h4>
         <form action="#" method="post">
             <button type="submit" name="Exit" value='Exit' class="but-1">Закрыть</button></form>
@@ -58,8 +58,7 @@
         <form action="#" method="post" id="order">
             <!-- value  содержит цены товаров из корзины -->
             <td></br><button type="submit" name="makepurchase"
-                    value="{% for product in data_product%}{{product.price}} {% endfor %}" class="but-1">Оформить заказ
-                    &nbsp; </button></td>
+                value="{% for product in data_product%}{{product.price}} {% endfor %}" class="but-1">Оформить заказ&nbsp; </button></td>
         </form>
         {% endif %}
     </tbody>

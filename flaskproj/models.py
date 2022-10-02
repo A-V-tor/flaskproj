@@ -2,10 +2,10 @@ from datetime import datetime
 from flaskproj import db
 from sqlalchemy.orm import relationship
 from sqlalchemy import ForeignKey
-#from flask_login import UserMixin
+from flask_login import UserMixin
 
 
-class Userprofile(db.Model):
+class Userprofile(db.Model, UserMixin):
     '''Модель юзера'''
     id = db.Column(db.Integer, primary_key=True)
     mail = db.Column(db.String(100), unique=True)
@@ -14,6 +14,8 @@ class Userprofile(db.Model):
     user_bascet = relationship('Bascet')
     user_card = relationship('Usercard')
     user_order = relationship('Orderuser')
+
+    
 
 
 class Product(db.Model):

@@ -59,20 +59,3 @@ def set_new_amount(item,entries_product):
         else:
             return None    
     return rm_list
-
-
-class UserLogin():
-    def is_authenticated(self):
-        return True
-    
-
-    def is_active(self):
-        return True
-    
-
-    def is_anonymous(self):
-        return False
-    
-
-    def get(self):
-        return self
