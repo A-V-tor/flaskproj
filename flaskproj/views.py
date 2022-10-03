@@ -1,23 +1,24 @@
+from flask import abort, flash, redirect, render_template, request, session, url_for
 from flask_bootstrap import Bootstrap
-from flask import render_template, request, url_for, redirect, flash, session, abort
-from .forms import FormReg, FormAvt, FormAddCard
-from flaskproj import app, db
-from .models import Userprofile, Product, Bascet, Usercard, Orderuser
-from .other import (
-    add_balance,
-    get_item,
-    get_data_product_bascet_and_card,
-    get_data_list_product_and_total_price,
-    set_new_amount,
-)
 from flask_login import (
     LoginManager,
-    login_user,
-    login_required,
-    logout_user,
     current_user,
+    login_required,
+    login_user,
+    logout_user,
 )
 
+from flaskproj import app, db
+
+from .forms import FormAddCard, FormAvt, FormReg
+from .models import Bascet, Orderuser, Product, Usercard, Userprofile
+from .other import (
+    add_balance,
+    get_data_list_product_and_total_price,
+    get_data_product_bascet_and_card,
+    get_item,
+    set_new_amount,
+)
 
 Bootstrap(app)
 login_manager = LoginManager(app)
@@ -98,7 +99,6 @@ def index_autorization():
         ).first()
         if datauser:
             login_user(datauser, remember=forma.remember.data)
-            print("next = ", request.args.get("next"))
             return redirect(
                 request.args.get("next") or url_for("index_shopping_basket")
             )
@@ -112,6 +112,8 @@ def index_autorization():
 @login_required
 def index_shopping_basket():
     card = False
+    order_number = False
+    many = False
     balance = "карта не привязана"
     entries_product, user_card = get_data_product_bascet_and_card(
         current_user.id, Bascet, Product, Usercard
@@ -120,31 +122,11 @@ def index_shopping_basket():
         balance = user_card.balance
         card = True
 
-    if "Exit" in request.form:
-        return render_template(
-            "basket.html",
-            name=current_user.name,
-            mail=current_user.mail,
-            data_product=entries_product,
-            title="Корзина товаров",
-            balance=balance,
-            card=card,
-        )
-
-    if "productremove" in request.form:
-        id_product = [i for i in request.form.values()]
-        product_for_remove = Bascet.query.filter_by(
-            user_id=current_user.id, product_id=int(*id_product)
-        ).first()
-        db.session.delete(product_for_remove)
-        db.session.commit()
-        return redirect(url_for("index_shopping_basket"))
-
-    if "makepurchase" in request.form:
+    if "make_purchase" in request.form:
         list_product, total_price = get_data_list_product_and_total_price(
             [i.name for i in entries_product],
-            [int(price) for price in request.form["makepurchase"].split()],
-            [int(amount) for amount in request.form.getlist("amountproduct")],
+            [int(price) for price in request.form["make_purchase"].split()],
+            [int(amount) for amount in request.form.getlist("amount_product")],
         )
         item = get_item([int(product[2]) for product in list_product])
         check_data = set_new_amount(item, entries_product)
@@ -160,6 +142,12 @@ def index_shopping_basket():
             )
             db.session.add(write_order)
             db.session.commit()
+            order_number = (
+                Orderuser.query.filter_by(user_id=current_user.id)
+                .order_by(Orderuser.date)
+                .all()[-1]
+                .id
+            )
 
         if balance - total_price < 0:
             user_card.balance = 1000
@@ -175,6 +163,8 @@ def index_shopping_basket():
             title="Корзина товаров",
             balance=balance,
             card=card,
+            order_number=order_number,
+            many=many,
         )
 
     return render_template(
@@ -185,12 +175,14 @@ def index_shopping_basket():
         title="Корзина товаров",
         balance=balance,
         card=card,
+        many=many,
     )
 
 
 @app.route("/add-card", methods=["POST", "GET"])
 @login_required
 def index_card():
+    successfully_added = False
     forma = FormAddCard()
 
     if forma.validate_on_submit():
@@ -198,12 +190,23 @@ def index_card():
 
         if len(limit_entries) > 0:
             return render_template(
-                "card_index.html", forma=forma, title="Привязка карты", yes="1"
+                "card_index.html",
+                forma=forma,
+                title="Привязка карты",
+                limit_reached="Данная карта уже существует!",
             )
 
         number_card, validity, secret_code, surname, firstname, patronymic = [
             i for i in request.form.values()
         ][1:-1]
+        if len(Usercard.query.filter_by(number_card=number_card).all()):
+            return render_template(
+                "card_index.html",
+                limit_reached="Карта с данным номером уже добавлена!",
+                forma=forma,
+                title="Привязка карты",
+                name=current_user.name,
+            )
         card = Usercard(
             user_id=current_user.id,
             surname=surname,
@@ -217,11 +220,16 @@ def index_card():
         try:
             db.session.add(card)
             db.session.commit()
+            successfully_added = True
         except:
             flash("Неккоректное заполнение", category="error")
 
     return render_template(
-        "card_index.html", forma=forma, title="Привязка карты", name=current_user.name
+        "card_index.html",
+        forma=forma,
+        title="Привязка карты",
+        name=current_user.name,
+        successfully_added=successfully_added,
     )
 
 
@@ -230,6 +238,24 @@ def index_card():
 def user_exit():
     logout_user()
     return redirect(url_for("index_autorization"))
+
+
+@app.route("/rm", methods=["POST", "GET"])
+@login_required
+def remove_product():
+    id_product = [i for i in request.form.values()]
+    product_for_remove = Bascet.query.filter_by(
+        user_id=current_user.id, product_id=int(*id_product)
+    ).first()
+    db.session.delete(product_for_remove)
+    db.session.commit()
+    return redirect(url_for("index_shopping_basket"))
+
+
+@app.route("/exit_in_bascet", methods=["POST", "GET"])
+@login_required
+def exit_in_bascet():
+    return redirect(url_for("index_shopping_basket"))
 
 
 @app.route("/test", methods=["POST", "GET"])
