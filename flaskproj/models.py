@@ -6,40 +6,42 @@ from flask_login import UserMixin
 
 
 class Userprofile(db.Model, UserMixin):
-    '''Модель юзера'''
+    """Модель юзера"""
+
     id = db.Column(db.Integer, primary_key=True)
     mail = db.Column(db.String(100), unique=True)
     name = db.Column(db.String(100))
     psw = db.Column(db.String(300))
-    user_bascet = relationship('Bascet')
-    user_card = relationship('Usercard')
-    user_order = relationship('Orderuser')
-
-    
+    user_bascet = relationship("Bascet")
+    user_card = relationship("Usercard")
+    user_order = relationship("Orderuser")
 
 
 class Product(db.Model):
-    '''Модель товара'''
+    """Модель товара"""
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     image = db.Column(db.String(100))
     price = db.Column(db.Integer)
     product_story = db.Column(db.String(500))
     amount = db.Column(db.Integer)
-    product_bascet = relationship('Bascet')
+    product_bascet = relationship("Bascet")
 
 
 class Bascet(db.Model):
-    '''Модель корзины товаров юзера'''
+    """Модель корзины товаров юзера"""
+
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, ForeignKey('userprofile.id'))
-    product_id = db.Column(db.Integer, ForeignKey('product.id'))
+    user_id = db.Column(db.Integer, ForeignKey("userprofile.id"))
+    product_id = db.Column(db.Integer, ForeignKey("product.id"))
 
 
 class Usercard(db.Model):
-    '''Модель пользовательских карт оплаты'''
+    """Модель пользовательских карт оплаты"""
+
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, ForeignKey('userprofile.id'))
+    user_id = db.Column(db.Integer, ForeignKey("userprofile.id"))
     surname = db.Column(db.String(80))
     firstname = db.Column(db.String(80))
     patronymic = db.Column(db.String(80))
@@ -50,16 +52,13 @@ class Usercard(db.Model):
 
 
 class Orderuser(db.Model):
-    '''Модель исполненых заказов'''
+    """Модель исполненых заказов"""
+
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, ForeignKey('userprofile.id'))
+    user_id = db.Column(db.Integer, ForeignKey("userprofile.id"))
     date = db.Column(db.DateTime, default=datetime.utcnow)
     list_product = db.Column(db.String(500))
     order_price = db.Column(db.Integer)
 
 
-
 db.create_all()
-
-
-
