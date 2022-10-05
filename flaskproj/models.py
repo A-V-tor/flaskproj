@@ -25,7 +25,7 @@ class Product(db.Model):
     price = db.Column(db.Integer)
     product_story = db.Column(db.String(500))
     amount = db.Column(db.Integer)
-    product_bascet = relationship("Bascet")
+    product_bascet = relationship("Bascet",cascade="all, delete")
 
 
 class Bascet(db.Model):
