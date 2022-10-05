@@ -1,4 +1,3 @@
-from datetime import datetime
 from flaskproj import db
 from sqlalchemy.orm import relationship
 from sqlalchemy import ForeignKey
@@ -56,8 +55,8 @@ class Orderuser(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, ForeignKey("userprofile.id"))
-    date = db.Column(db.DateTime, default=datetime.utcnow)
-    list_product = db.Column(db.String(500))
+    date = db.Column(db.DateTime)
+    list_product = db.Column(db.JSON)
     order_price = db.Column(db.Integer)
 
 

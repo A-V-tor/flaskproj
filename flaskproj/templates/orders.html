@@ -4,23 +4,20 @@
 <h2>
     <center>История заказов</center>
 </h2>
+
 <div class="order">
-{% for item in list_order %}
-  {% for i in item %}  
-  товар {{i[0]}}</br>цена: {{i[1]}}, кол-во {{i[2]}} (ед.) </br>     
-  {% endfor %}  </br> </br> 
-{% endfor %}
-</div>
-<center>
 <dl>
-    {% for item in order_number %} 
+    {% for item in order_list  %} 
     <dt><h3>Заказ № {{item.id}}</h3></dt>
-        <dd>
-            {{item.date}} 
-        </dd> </br>
-        Сумма заказа: {{item.order_price}}</br></br>
+      <div class="in-order">  <dd>
+            {{item.date}}  </br> {% for i in item.list_product %}
+            <h4>товар {{i[0]}}</h4>
+            цена: {{i[1]}}, кол-во {{i[2]}} (ед.) </br> 
+            {% endfor %} 
+        <h4>Сумма заказа: {{item.order_price}}</h4></br></br>
+        </dd></div>
     {% endfor %}
 </dl>
-</center>
-{% endblock %}
 
+{% endblock %}
+</div>
