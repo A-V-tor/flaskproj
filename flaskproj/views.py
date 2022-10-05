@@ -131,10 +131,10 @@ def index_shopping_basket():
         )
         item = get_item([int(product[2]) for product in list_product])
         check_data = set_new_amount(item, entries_product)
-        
         if balance - total_price > 0 and total_price != 0 and check_data != None:
             rm_bascet = Bascet.query.filter_by(user_id=current_user.id).all()
             [db.session.delete(rm) for rm in rm_bascet]
+            [db.session.delete(rm) for rm in check_data]
             user_card.balance -= total_price
             new_order = Orderuser(
                 user_id=current_user.id,

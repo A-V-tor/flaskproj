@@ -55,7 +55,7 @@ def set_new_amount(item, entries_product):
             product.amount = new_amount[0]
             new_amount = new_amount[1:]
         elif new_amount[0] == 0:
-            rm_list.append(new_amount)
+            rm_list.append(product)
         else:
             return None
     return rm_list
