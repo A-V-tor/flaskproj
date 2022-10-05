@@ -1,3 +1,4 @@
+import json
 from flask import abort, flash, redirect, render_template, request, session, url_for
 from flask_bootstrap import Bootstrap
 from flask_login import (
@@ -18,6 +19,7 @@ from .other import (
     get_data_product_bascet_and_card,
     get_item,
     set_new_amount,
+    get_correct_order_data,
 )
 
 Bootstrap(app)
@@ -130,14 +132,14 @@ def index_shopping_basket():
         )
         item = get_item([int(product[2]) for product in list_product])
         check_data = set_new_amount(item, entries_product)
-
+        
         if balance - total_price > 0 and total_price != 0 and check_data != None:
             rm_bascet = Bascet.query.filter_by(user_id=current_user.id).all()
             [db.session.delete(rm) for rm in rm_bascet]
             user_card.balance -= total_price
             write_order = Orderuser(
                 user_id=current_user.id,
-                list_product=list_product,
+                list_product=json.dumps(list_product),
                 order_price=total_price,
             )
             db.session.add(write_order)
@@ -256,6 +258,29 @@ def remove_product():
 @login_required
 def exit_in_bascet():
     return redirect(url_for("index_shopping_basket"))
+
+
+@app.route("/order", methods=["POST", "GET"])
+@login_required
+def order_user():
+    order_number = (
+                Orderuser.query.filter_by(user_id=current_user.id)
+                .order_by(Orderuser.date)
+                .all()
+            )
+    #print(json.loads([i.list_product for i in order_number]))
+    #print([json.loads(i) for i in [i.list_product for i in order_number]])
+    #print([json.loads(i.list_product) for i in order_number])
+    #print(order_number.list_product) 
+    #order_data = get_correct_order_data([i.list_product for i in order_number])
+    #print(order_data)
+    #zip_list_order = zip([i.id  for i in order_number],[i.date  for i in order_number],[i.order_price for i in order_number])
+    #dataorder = [i for i in zip_list_order]
+    #print(dataorder)
+    [*list_order] = [json.loads(i.list_product) for i in order_number]
+    
+    print(list_order)
+    return render_template('orders.html',list_order=list_order,order_number=order_number)
 
 
 @app.route("/test", methods=["POST", "GET"])

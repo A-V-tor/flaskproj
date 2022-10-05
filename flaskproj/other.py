@@ -1,6 +1,7 @@
 import random
 
 
+
 def add_balance():
     """Генерация едениц оплаты для карты пользователя"""
     a = random.randint(10, 100)
@@ -58,3 +59,27 @@ def set_new_amount(item, entries_product):
         else:
             return None
     return rm_list
+
+
+def get_correct_order_data(incorrect_data):
+    false_value = ['\\','(',')','{','}','"',"'"]
+    true_data_list = []
+    string = ''
+    for data in incorrect_data:
+        for item in data:
+            if item not in false_value:
+                string += item
+        true_data_list.append(string.split(',',3))
+        string = ''
+    return true_data_list
+
+
+             
+        
+
+
+
+
+     
+
+
