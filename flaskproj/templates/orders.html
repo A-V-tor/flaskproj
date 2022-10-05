@@ -6,18 +6,29 @@
 </h2>
 
 <div class="order">
-<dl>
-    {% for item in order_list  %} 
-    <dt><h3>Заказ № {{item.id}}</h3></dt>
-      <div class="in-order">  <dd>
-            {{item.date}}  </br> {% for i in item.list_product %}
-            <h4>товар {{i[0]}}</h4>
-            цена: {{i[1]}}, кол-во {{i[2]}} (ед.) </br> 
-            {% endfor %} 
-        <h4>Сумма заказа: {{item.order_price}}</h4></br></br>
-        </dd></div>
-    {% endfor %}
-</dl>
-
-{% endblock %}
+    <dl>
+        {% for item in order_list.items %}
+        <dt>
+            <h3>Заказ № {{item.id}}</h3>
+        </dt>
+        <div class="in-order">
+            <dd>
+                {{item.date}} </br> {% for i in item.list_product %}
+                <h4>товар {{i[0]}}</h4>
+                цена: {{i[1]}}, кол-во {{i[2]}} (ед.) </br>
+                {% endfor %}
+                <h4>Сумма заказа: {{item.order_price}}</h4></br></br>
+            </dd>
+        </div>
+        {% endfor %}
+    </dl>
+    <h4>{% if order_list.has_prev %}
+        <a href="{{ url_for('order_user', page = order_list.prev_num) }}">
+            << Назад</a>{% endif %}
+                {% if order_list.has_next %}
+                <a href="{{ url_for('order_user', page = order_list.next_num) }}">Вперед
+                    >></a>
+                {% endif %}
+    </h4>
 </div>
+{% endblock %}

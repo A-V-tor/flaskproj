@@ -260,13 +260,13 @@ def exit_in_bascet():
     return redirect(url_for("index_shopping_basket"))
 
 
-@app.route("/order", methods=["POST", "GET"])
+@app.route("/order/<int:page>", methods=["POST", "GET"])
 @login_required
-def order_user():
+def order_user(page=1):
     order_list = (
                 Orderuser.query.filter_by(user_id=current_user.id)
-                .order_by(Orderuser.date)
-                .all()
+                .order_by(Orderuser.date.desc())
+                .paginate(page,5,False)
             )
     return render_template('orders.html',order_list=order_list )
 
