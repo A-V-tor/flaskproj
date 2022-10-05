@@ -127,3 +127,20 @@ p:before {
     opacity: 1.0;
     border-radius: 10px;
 }
+
+/* история заказов */
+
+.order {
+    margin-left: 20%;
+    margin-top: 2%;
+    position: absolute;
+}
+
+.in-order {
+    width: 200%;
+    margin-left: 20%;
+    margin-top: 0%;
+    background-color: #abdff0;
+    opacity: 0.7;
+    border-radius: 10px;
+}

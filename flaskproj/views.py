@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import abort, flash, redirect, render_template, request, session, url_for
 from flask_bootstrap import Bootstrap
 from flask_login import (
@@ -130,17 +131,18 @@ def index_shopping_basket():
         )
         item = get_item([int(product[2]) for product in list_product])
         check_data = set_new_amount(item, entries_product)
-
+        
         if balance - total_price > 0 and total_price != 0 and check_data != None:
             rm_bascet = Bascet.query.filter_by(user_id=current_user.id).all()
             [db.session.delete(rm) for rm in rm_bascet]
             user_card.balance -= total_price
-            write_order = Orderuser(
+            new_order = Orderuser(
                 user_id=current_user.id,
+                date = datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
                 list_product=list_product,
                 order_price=total_price,
             )
-            db.session.add(write_order)
+            db.session.add(new_order)
             db.session.commit()
             order_number = (
                 Orderuser.query.filter_by(user_id=current_user.id)
@@ -152,7 +154,7 @@ def index_shopping_basket():
         if balance - total_price < 0:
             user_card.balance = 1000
             db.session.commit()
-            many = "Не хватает денег!"  # нигде не использую
+            many = "Не хватает денег!" 
 
         return render_template(
             "basket.html",
@@ -256,6 +258,17 @@ def remove_product():
 @login_required
 def exit_in_bascet():
     return redirect(url_for("index_shopping_basket"))
+
+
+@app.route("/order", methods=["POST", "GET"])
+@login_required
+def order_user():
+    order_list = (
+                Orderuser.query.filter_by(user_id=current_user.id)
+                .order_by(Orderuser.date)
+                .all()
+            )
+    return render_template('orders.html',order_list=order_list )
 
 
 @app.route("/test", methods=["POST", "GET"])

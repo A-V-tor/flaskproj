@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<h2>
+    <center>История заказов</center>
+</h2>
+
+<div class="order">
+<dl>
+    {% for item in order_list  %} 
+    <dt><h3>Заказ № {{item.id}}</h3></dt>
+      <div class="in-order">  <dd>
+            {{item.date}}  </br> {% for i in item.list_product %}
+            <h4>товар {{i[0]}}</h4>
+            цена: {{i[1]}}, кол-во {{i[2]}} (ед.) </br> 
+            {% endfor %} 
+        <h4>Сумма заказа: {{item.order_price}}</h4></br></br>
+        </dd></div>
+    {% endfor %}
+</dl>
+
+{% endblock %}
+</div>
