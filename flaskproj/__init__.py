@@ -10,6 +10,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://a-v-tor@localhost/mybase"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 
+
 db = SQLAlchemy(app)
 
 from . import views

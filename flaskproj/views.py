@@ -138,7 +138,7 @@ def index_shopping_basket():
             user_card.balance -= total_price
             new_order = Orderuser(
                 user_id=current_user.id,
-                date = datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+                date=datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
                 list_product=list_product,
                 order_price=total_price,
             )
@@ -154,7 +154,7 @@ def index_shopping_basket():
         if balance - total_price < 0:
             user_card.balance = 1000
             db.session.commit()
-            many = "Не хватает денег!" 
+            many = "Не хватает денег!"
 
         return render_template(
             "basket.html",
@@ -195,7 +195,7 @@ def index_card():
                 "card_index.html",
                 forma=forma,
                 title="Привязка карты",
-                limit_reached="Данная карта уже существует!",
+                limit_reached="У вас уже есть карта!",
             )
 
         number_card, validity, secret_code, surname, firstname, patronymic = [
@@ -264,11 +264,11 @@ def exit_in_bascet():
 @login_required
 def order_user():
     order_list = (
-                Orderuser.query.filter_by(user_id=current_user.id)
-                .order_by(Orderuser.date)
-                .all()
-            )
-    return render_template('orders.html',order_list=order_list )
+        Orderuser.query.filter_by(user_id=current_user.id)
+        .order_by(Orderuser.date.desc())
+        .paginate(page, 5, False)
+    )
+    return render_template("orders.html", order_list=order_list)
 
 
 @app.route("/test", methods=["POST", "GET"])
