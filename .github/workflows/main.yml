@@ -23,17 +23,6 @@ jobs:
           
       - name: Install dependencies
         run: |
-          pip install poetry
-          poetry install
-          poetry add pytest
-          poetry add pytest-cov
-          poetry add PyYAML
-      - name: Check test
-        run: poetry run pytest
-
-      - name: Code coverage
-        uses: paambaati/codeclimate-action@v2.7.5
-        env:
-          CC_TEST_REPORTER_ID: ef3bf27a17b72d1ba222253e31cc62614b12d7a5a43fcfe4acacffe0fde26ee9
-        with:
-          coverageCommand: poetry run pytest --cov=project_hex --cov-report xml 
+          pip install black
+      - name: Formatting
+        run: black flaskproj
