@@ -25,6 +25,8 @@ jobs:
         run: |
           pip install poetry
           poetry install
+          poetry add pytest
+          poetry add pytest-cov
 
       - name: Code coverage
         uses: paambaati/codeclimate-action@v2.7.5
