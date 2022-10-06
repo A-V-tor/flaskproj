@@ -1,0 +1,36 @@
+# This is a basic workflow to help you get started with Actions
+
+name: check
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+ 
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          pip install pytest
+          pip install pytest-cov
+          pip install PyYAML
+
+      - name: Code coverage
+      uses: paambaati/codeclimate-action@v2.7.5
+      env:
+        CC_TEST_REPORTER_ID: ef3bf27a17b72d1ba222253e31cc62614b12d7a5a43fcfe4acacffe0fde26ee9
+      with:
+        coverageCommand: poetry run pytest --cov=project_hex --cov-report xml 
