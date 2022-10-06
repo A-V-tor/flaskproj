@@ -1,7 +1,6 @@
 import random
 
 
-
 def add_balance():
     """Генерация едениц оплаты для карты пользователя"""
     a = random.randint(10, 100)
@@ -59,15 +58,3 @@ def set_new_amount(item, entries_product):
         else:
             return None
     return rm_list
-
-
-
-             
-        
-
-
-
-
-     
-
-
