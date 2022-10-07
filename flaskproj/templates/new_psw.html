@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<h2>
+    <center>Смена пароля</center>
+</h2>
+{% for i, msg in get_flashed_messages(True) %}
+<div class="flash {{i}}">
+  <center>{{msg}}</center>
+</div>
+{% endfor %}
+<form action="" method="post" class="registr">
+  <p>{{forma.hidden_tag()}}
+  <p>{{ forma.new_psw.label }} {{ forma.new_psw(placeholder='Новый пароль') }}
+    </br>
+  <p>
+   {{ forma.check_psw.label() }} {{ forma.check_psw(placeholder='Новый пароль') }}
+  <p>{{ forma.submit() }}
+  </p>
+</form>
+{% endblock %}

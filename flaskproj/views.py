@@ -11,7 +11,7 @@ from flask_login import (
 
 from flaskproj import app, db
 
-from .forms import FormAddCard, FormAvt, FormReg
+from .forms import FormAddCard, FormAvt, FormReg, New_Psw
 from .models import Bascet, Orderuser, Product, Usercard, Userprofile
 from .other import (
     add_balance,
@@ -229,7 +229,7 @@ def index_card():
     return render_template(
         "card_index.html",
         forma=forma,
-        title="Привязка карты",
+        title="Платежнвя карта",
         name=current_user.name,
         successfully_added=successfully_added,
     )
@@ -268,7 +268,22 @@ def order_user(page=1):
         .order_by(Orderuser.date.desc())
         .paginate(page, 5, False)
     )
-    return render_template("orders.html", order_list=order_list)
+    return render_template("orders.html", order_list=order_list, title='История заказов')
+
+
+@app.route("/password", methods=["POST", "GET"])
+@login_required
+def new_psw():
+    forma=New_Psw()
+    if forma.validate_on_submit():
+        if request.form['new_psw'] == request.form['check_psw']:
+            Userprofile.query.filter_by(id=current_user.id).update(dict(psw=request.form['new_psw']))
+            db.session.commit()
+            logout_user()
+            return redirect(url_for("index_autorization"))
+        else:
+            flash("Пароли должны совпадать!", category="error")
+    return render_template('new_psw.html', title='Смена пароля', forma=forma)
 
 
 @app.route("/test", methods=["POST", "GET"])

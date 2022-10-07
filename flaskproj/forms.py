@@ -51,3 +51,9 @@ class FormAddCard(FlaskForm):
         "Отчество", validators=[DataRequired(), Length(min=4, max=80)]
     )
     submit = SubmitField("Добавить")
+
+
+class New_Psw(FlaskForm):
+    new_psw = PasswordField("Новый пароль ", validators=[DataRequired(), Length(min=4, max=20)])
+    check_psw = PasswordField("Повтор пароля ", validators=[DataRequired(), Length(min=4, max=20)])
+    submit = SubmitField("Сменить пароль")
