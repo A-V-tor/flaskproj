@@ -188,20 +188,22 @@ def index_shopping_basket():
 @app.route("/add-card", methods=["POST", "GET"])
 @login_required
 def index_card():
+    card_user = False
     successfully_added = False
     forma = FormAddCard()
+    limit_entries = Usercard.query.filter_by(user_id=current_user.id).all()
+
+    if len(limit_entries) > 0:
+        num = current_user.user_card[0].number_card
+        return render_template(
+            "card_index.html",
+            forma=forma,
+            title="Привязка карты",
+            card_user=True,
+            num=num
+        )
 
     if forma.validate_on_submit():
-        limit_entries = Usercard.query.filter_by(user_id=current_user.id).all()
-
-        if len(limit_entries) > 0:
-            return render_template(
-                "card_index.html",
-                forma=forma,
-                title="Привязка карты",
-                limit_reached="У вас уже есть карта!",
-            )
-
         number_card, validity, secret_code, surname, firstname, patronymic = [
             i for i in request.form.values()
         ][1:-1]
@@ -236,6 +238,7 @@ def index_card():
         title="Платежнвя карта",
         name=current_user.name,
         successfully_added=successfully_added,
+        card_user=card_user,
     )
 
 
@@ -302,6 +305,12 @@ def trend():
         "trend.html", trend=Product.query.get(trend_product.product_id)
     )
 
+@app.route("/remove-card", methods=["POST", "GET"])
+def card_remove():
+    current_card = current_user.user_card[0]
+    db.session.delete(current_card)
+    db.session.commit()
+    return redirect(url_for('index_card'))
 
 @app.errorhandler(404)
 def pageNot(error):

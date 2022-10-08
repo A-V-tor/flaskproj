@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
 {% include 'navbar.html' %}
+
+{% if not card_user %}
 <h2>
     <center>Добавление карты оплаты</center>
 </h2>
@@ -33,6 +35,19 @@
     {{ forma.patronymic.label() }} {{ forma.patronymic(placeholder='Иванович') }}
 </br>
     {{ forma.submit() }}
- </form>
- 
+ </form> 
+ {% endif %}
+
+ {% if card_user %}
+ <h2>
+    <center>Удаление карты оплаты</center>
+</h2></br></br></br>
+ <div class="rm-card">
+    <form action="/remove-card" method="post">
+    <center>Текущая карта</center>
+    <center><p>{{num}}</p></center>
+        <button type="submit" name="remove_card" value='remove' class="rm-bt" >Удаление</button>
+    </form>
+</div>
+ {% endif %}
 {% endblock %} 

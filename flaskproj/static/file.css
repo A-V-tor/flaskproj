@@ -118,6 +118,8 @@ p:before {
     border-radius: 10px;
 }
 
+/* карта оплаты */
+
 .add-card {
     margin-left: 25%;
     width: 50%;
@@ -126,6 +128,27 @@ p:before {
     position: relative;
     opacity: 1.0;
     border-radius: 10px;
+}
+
+.rm-card {
+    margin-left: 38%;
+    width: 340px;
+    height: 140px;
+    background: #e6e6e6;
+    border-radius: 18px;
+    box-shadow: 0 0 40px -10px #000;
+    margin: calc(50vh - 220px) auto;
+    padding: 20px 30px;
+    max-width: calc(100vw - 40px);
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.rm-bt {
+    margin-left: 70%;
+ 
+    background-color: #e6e6e6;
+    box-shadow: 0 0 40px 10px #e6e6e6;
 }
 
 /* история заказов */
