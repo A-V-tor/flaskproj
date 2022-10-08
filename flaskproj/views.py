@@ -132,10 +132,23 @@ def index_shopping_basket():
         )
         item = get_item([int(product[2]) for product in list_product])
         check_data, trend_list = set_new_amount(item, entries_product)
-
+        if  check_data == None and trend_list == None:
+            return render_template(
+                "basket.html",
+            name=current_user.name,
+            mail=current_user.mail,
+            data_product=entries_product,
+            total_price=total_price,
+            title="Корзина товаров",
+            balance=balance,
+            card=card,
+            order_number=order_number,
+            many=many,
+            no_amount=True,
+            )
         set_trend(TrendingProduct,trend_list)
 
-        if balance - total_price > 0 and total_price != 0 and check_data != None:
+        if balance - total_price > 0 and total_price != 0:
             rm_bascet = Bascet.query.filter_by(user_id=current_user.id).all()
             [db.session.delete(rm) for rm in rm_bascet]
             [db.session.delete(rm) for rm in check_data]

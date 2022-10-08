@@ -60,7 +60,7 @@ def set_new_amount(item, entries_product):
             trend_list.append([product.id, product.amount - new_amount[0]])
             rm_list.append(product)
         else:
-            return None
+            return None, None
     return rm_list, trend_list
 
 
