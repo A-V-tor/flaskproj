@@ -26,6 +26,7 @@ class Product(db.Model):
     product_story = db.Column(db.String(500))
     amount = db.Column(db.Integer)
     product_bascet = relationship("Bascet", cascade="all, delete")
+    product_trending = relationship("TrendingProduct")
 
 
 class Bascet(db.Model):
@@ -58,6 +59,12 @@ class Orderuser(db.Model):
     date = db.Column(db.DateTime)
     list_product = db.Column(db.JSON)
     order_price = db.Column(db.Integer)
+
+
+class TrendingProduct(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, ForeignKey("product.id"))
+    item = db.Column(db.Integer)
 
 
 db.create_all()

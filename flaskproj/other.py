@@ -49,12 +49,15 @@ def set_new_amount(item, entries_product):
     """
     new_amount = [value.amount - next(item) for value in entries_product]
     rm_list = []
+    trend_list = []
     for product in [value for value in entries_product]:
         if new_amount[0] > 0:
+            trend_list.append([product.id, product.amount-new_amount[0]])
             product.amount = new_amount[0]
             new_amount = new_amount[1:]
         elif new_amount[0] == 0:
+            trend_list.append([product.id, product.amount-new_amount[0]])
             rm_list.append(product)
         else:
             return None
-    return rm_list
+    return rm_list, trend_list

@@ -12,7 +12,7 @@ from flask_login import (
 from flaskproj import app, db
 
 from .forms import FormAddCard, FormAvt, FormReg, New_Psw
-from .models import Bascet, Orderuser, Product, Usercard, Userprofile
+from .models import Bascet, Orderuser, Product, Usercard, Userprofile, TrendingProduct
 from .other import (
     add_balance,
     get_data_list_product_and_total_price,
@@ -130,7 +130,18 @@ def index_shopping_basket():
             [int(amount) for amount in request.form.getlist("amount_product")],
         )
         item = get_item([int(product[2]) for product in list_product])
-        check_data = set_new_amount(item, entries_product)
+        check_data, trend_list = set_new_amount(item, entries_product)
+
+        for i in trend_list:
+            check_data_product = TrendingProduct.query.filter_by(product_id=i[0]).first()
+            if check_data_product == None:
+                db.session.add(TrendingProduct(product_id=i[0],item=i[1]))
+            else:
+                item_new = check_data_product.item + i[1]
+                TrendingProduct.query.filter_by(product_id=i[0]).update(dict(item=item_new))
+            db.session.commit()
+            
+
         if balance - total_price > 0 and total_price != 0 and check_data != None:
             rm_bascet = Bascet.query.filter_by(user_id=current_user.id).all()
             [db.session.delete(rm) for rm in rm_bascet]
@@ -286,10 +297,11 @@ def new_psw():
     return render_template('new_psw.html', title='Смена пароля', forma=forma)
 
 
-@app.route("/test", methods=["POST", "GET"])
+@app.route("/trend", methods=["POST", "GET"])
 @login_required
-def test():
-    return render_template("test.html", name=current_user.name)
+def trend():
+    trend_product = TrendingProduct.query.order_by(TrendingProduct.item.desc()).first()
+    return render_template("trend.html", trend=Product.query.get(trend_product.product_id))
 
 
 @app.errorhandler(404)

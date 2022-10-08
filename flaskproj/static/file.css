@@ -144,3 +144,9 @@ p:before {
     opacity: 0.7;
     border-radius: 10px;
 }
+/* страница тренда */
+
+.price-trend {
+    margin-left: 70%;
+    font-family: initial;
+}
