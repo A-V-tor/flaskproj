@@ -1,4 +1,5 @@
 import random
+from flaskproj import db
 
 
 def add_balance():
@@ -52,12 +53,28 @@ def set_new_amount(item, entries_product):
     trend_list = []
     for product in [value for value in entries_product]:
         if new_amount[0] > 0:
-            trend_list.append([product.id, product.amount-new_amount[0]])
+            trend_list.append([product.id, product.amount - new_amount[0]])
             product.amount = new_amount[0]
             new_amount = new_amount[1:]
         elif new_amount[0] == 0:
-            trend_list.append([product.id, product.amount-new_amount[0]])
+            trend_list.append([product.id, product.amount - new_amount[0]])
             rm_list.append(product)
         else:
             return None
     return rm_list, trend_list
+
+
+
+def set_trend(trending_product,trend_list):
+    for i in trend_list:
+        check_data_product = trending_product.query.filter_by(
+            product_id=i[0]
+        ).first()
+        if check_data_product == None:
+            db.session.add(trending_product(product_id=i[0], item=i[1]))
+        else:
+            item_new = check_data_product.item + i[1]
+            trending_product.query.filter_by(product_id=i[0]).update(
+                dict(item=item_new)
+            )
+        db.session.commit()

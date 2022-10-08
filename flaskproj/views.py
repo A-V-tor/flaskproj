@@ -19,6 +19,7 @@ from .other import (
     get_data_product_bascet_and_card,
     get_item,
     set_new_amount,
+    set_trend
 )
 
 Bootstrap(app)
@@ -132,15 +133,7 @@ def index_shopping_basket():
         item = get_item([int(product[2]) for product in list_product])
         check_data, trend_list = set_new_amount(item, entries_product)
 
-        for i in trend_list:
-            check_data_product = TrendingProduct.query.filter_by(product_id=i[0]).first()
-            if check_data_product == None:
-                db.session.add(TrendingProduct(product_id=i[0],item=i[1]))
-            else:
-                item_new = check_data_product.item + i[1]
-                TrendingProduct.query.filter_by(product_id=i[0]).update(dict(item=item_new))
-            db.session.commit()
-            
+        set_trend(TrendingProduct,trend_list)
 
         if balance - total_price > 0 and total_price != 0 and check_data != None:
             rm_bascet = Bascet.query.filter_by(user_id=current_user.id).all()
@@ -279,29 +272,35 @@ def order_user(page=1):
         .order_by(Orderuser.date.desc())
         .paginate(page, 5, False)
     )
-    return render_template("orders.html", order_list=order_list, title='История заказов')
+    return render_template(
+        "orders.html", order_list=order_list, title="История заказов"
+    )
 
 
 @app.route("/password", methods=["POST", "GET"])
 @login_required
 def new_psw():
-    forma=New_Psw()
+    forma = New_Psw()
     if forma.validate_on_submit():
-        if request.form['new_psw'] == request.form['check_psw']:
-            Userprofile.query.filter_by(id=current_user.id).update(dict(psw=request.form['new_psw']))
+        if request.form["new_psw"] == request.form["check_psw"]:
+            Userprofile.query.filter_by(id=current_user.id).update(
+                dict(psw=request.form["new_psw"])
+            )
             db.session.commit()
             logout_user()
             return redirect(url_for("index_autorization"))
         else:
             flash("Пароли должны совпадать!", category="error")
-    return render_template('new_psw.html', title='Смена пароля', forma=forma)
+    return render_template("new_psw.html", title="Смена пароля", forma=forma)
 
 
 @app.route("/trend", methods=["POST", "GET"])
 @login_required
 def trend():
     trend_product = TrendingProduct.query.order_by(TrendingProduct.item.desc()).first()
-    return render_template("trend.html", trend=Product.query.get(trend_product.product_id))
+    return render_template(
+        "trend.html", trend=Product.query.get(trend_product.product_id)
+    )
 
 
 @app.errorhandler(404)
