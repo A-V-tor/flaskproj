@@ -25,4 +25,4 @@ jobs:
         run: |
           pip install black
       - name: Formatting
-        run: black .
+        run: black flaskproj
