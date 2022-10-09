@@ -173,3 +173,27 @@ p:before {
     margin-left: 70%;
     font-family: initial;
 }
+
+/* test */
+.span5 {
+    width:440px;
+}
+
+
+.picture{margin-bottom:10px;}
+
+.thumb{
+    width:auto;
+    margin-left:5%;
+    margin-bottom:2%;
+    float:left;
+    cursor: pointer;
+    border: 1px solid;
+}
+.thumb:hover {
+    border: 1px solid yellow;
+    width: auto;
+    height: auto;
+    display: block;
+}
+

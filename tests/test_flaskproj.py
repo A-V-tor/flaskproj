@@ -48,10 +48,10 @@ class TestView:
         assert response.status_code == 200
         html = response.get_data(as_text=True)
         if 'name="productname"' in html:
-            response = self.client.post("/", data={"productname": "5"})
+            response = self.client.post("/", data={"productname": "1"})
             response = self.client.get("/basket")
             assert response.status_code == 200
-            response = self.client.post("/", data={"product_remove": "5"})
+            response = self.client.post("/", data={"product_remove": "1"})
             html = response.get_data(as_text=True)
             assert "product_remove" not in html
 

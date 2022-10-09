@@ -37,7 +37,7 @@ def load_user(user):
 @app.route("/", methods=["POST", "GET"])
 def index_main():
     """Обработка главной страницы"""
-    data_product = Product.query.filter_by().all()
+    data_product = Product.query.filter_by().order_by(Product.name).all()
     if current_user.is_authenticated:
         if request.method == "POST":
             name_product = [i for i in request.form.values()]
@@ -121,13 +121,13 @@ def index_shopping_basket():
         current_user.id, Bascet, Product, Usercard
     )
     if user_card:
-        balance = user_card.balance
+        balance = int(user_card.balance)
         card = True
 
     if "make_purchase" in request.form:
         list_product, total_price = get_data_list_product_and_total_price(
             [i.name for i in entries_product],
-            [int(price) for price in request.form["make_purchase"].split()],
+            [float(price) for price in request.form["make_purchase"].split()],
             [int(amount) for amount in request.form.getlist("amount_product")],
         )
         item = get_item([int(product[2]) for product in list_product])
@@ -146,7 +146,7 @@ def index_shopping_basket():
             many=many,
             no_amount=True,
             )
-        set_trend(TrendingProduct,trend_list)
+        set_trend(TrendingProduct, trend_list)
 
         if balance - total_price > 0 and total_price != 0:
             rm_bascet = Bascet.query.filter_by(user_id=current_user.id).all()
@@ -324,6 +324,11 @@ def card_remove():
     db.session.delete(current_card)
     db.session.commit()
     return redirect(url_for('index_card'))
+
+
+@app.route("/test", methods=["POST", "GET"])
+def test():
+    return render_template('test.html')
 
 @app.errorhandler(404)
 def pageNot(error):

@@ -22,7 +22,7 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     image = db.Column(db.String(100))
-    price = db.Column(db.Integer)
+    price = db.Column(db.Float)
     product_story = db.Column(db.String(500))
     amount = db.Column(db.Integer)
     product_bascet = relationship("Bascet", cascade="all, delete")
@@ -48,7 +48,7 @@ class Usercard(db.Model):
     number_card = db.Column(db.String(20), unique=True)
     validity = db.Column(db.String(5))
     secret_code = db.Column(db.String(4))
-    balance = db.Column(db.Integer)
+    balance = db.Column(db.Float)
 
 
 class Orderuser(db.Model):
