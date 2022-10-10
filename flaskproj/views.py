@@ -1,5 +1,3 @@
-from flask_admin.contrib.sqla import ModelView
-from flask_admin import BaseView, expose
 from datetime import datetime
 from flask import abort, flash, redirect, render_template, request, session, url_for
 from flask_bootstrap import Bootstrap
@@ -11,7 +9,7 @@ from flask_login import (
     logout_user,
 )
 
-from flaskproj import app, db,admin
+from flaskproj import app, db
 
 from .forms import FormAddCard, FormAvt, FormReg, New_Psw
 from .models import Bascet, Orderuser, Product, Usercard, Userprofile, TrendingProduct
@@ -32,20 +30,6 @@ login_manager = LoginManager(app)
 login_manager.login_view = "index_autorization"
 login_manager.login_message = " Нужно пройти процесс авторизации!"
 login_manager.login_message_category = "error"
-
-
-class AnalyticsView(BaseView):
-    @expose('/')
-    def index(self):
-        user_amount = Userprofile.query.all()
-        return self.render('admin/analytics_index.html',user_amount=len(user_amount))
-
-
-admin.add_view(AnalyticsView(name='Analytics', endpoint='analytics'))
-admin.add_view(ModelView(Userprofile, db.session))
-admin.add_view(ModelView(Product, db.session))
-admin.add_view(ModelView(Orderuser, db.session))
-admin.add_view(ModelView(Usercard, db.session))
 
 
 @login_manager.user_loader

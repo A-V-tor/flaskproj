@@ -11,9 +11,9 @@ class Userprofile(db.Model, UserMixin):
     mail = db.Column(db.String(100), unique=True)
     name = db.Column(db.String(100))
     psw = db.Column(db.String(300))
-    user_bascet = relationship("Bascet")
-    user_card = relationship("Usercard")
-    user_order = relationship("Orderuser")
+    user_bascet = relationship("Bascet", cascade="all, delete")
+    user_card = relationship("Usercard", cascade="all, delete")
+    user_order = relationship("Orderuser", cascade="all, delete")
 
 
 class Product(db.Model):
