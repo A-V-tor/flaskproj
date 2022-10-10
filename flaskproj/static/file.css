@@ -238,3 +238,34 @@ p:before {
     margin-right: 15%;
 }
 
+/* post */
+
+.form-i {
+    padding: 50px;
+  }
+
+  .form-i textarea {
+    height: 300px;
+  }
+  
+  .form-i input,
+  .form-i textarea {
+    display: block;
+    width: 60%;
+    padding: 0 20px;
+    margin-bottom: 10px;
+    background: #E9EFF6;
+    line-height: 40px;
+    border-width: 0;
+    border-radius: 20px;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .form-i input[type="submit"] {
+    margin-top: 30px;
+    background: #abdff0;
+    border-bottom: 4px solid #fff;
+    color: #2f2f2f;
+    font-size: 14px;
+    width: 30%;
+  }

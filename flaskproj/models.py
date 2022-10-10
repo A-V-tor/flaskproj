@@ -14,6 +14,7 @@ class Userprofile(db.Model, UserMixin):
     user_bascet = relationship("Bascet", cascade="all, delete")
     user_card = relationship("Usercard", cascade="all, delete")
     user_order = relationship("Orderuser", cascade="all, delete")
+    user_post = relationship('UserPosts', cascade="all, delete")
 
 
 class Product(db.Model):
@@ -65,6 +66,16 @@ class TrendingProduct(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, ForeignKey("product.id"))
     item = db.Column(db.Integer)
+
+
+class UserPosts(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime)
+    title = db.Column(db.String(50))
+    body = db.Column(db.String(250))
+    user_name = db.Column(db.String(100))
+    user_id = db.Column(db.Integer, ForeignKey("userprofile.id"))
+    
 
 
 db.create_all()

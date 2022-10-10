@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<center>
+  <form action="" method="post" class="form-i">
+  <p>{{forma.hidden_tag()}}
+  <p>{{ forma.title.label() }} {{ forma.title(placeholder='заголовок') }}
+  <p>{{ forma.body.label() }} {{ forma.body(placeholder='комментарий') }}
+  <p>{{ forma.submit() }}
+</form>
+</center>
+{% endblock %}

@@ -4,7 +4,7 @@ from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import BaseView, expose
-from .models import Bascet, Orderuser, Product, Usercard, Userprofile
+from .models import Orderuser, Product, Usercard, Userprofile, UserPosts
 from .views import current_user
 
 
@@ -33,5 +33,5 @@ admin.add_view(ModelView(Userprofile, db.session))
 admin.add_view(ModelView(Product, db.session))
 admin.add_view(ModelView(Orderuser, db.session))
 admin.add_view(ModelView(Usercard, db.session))
-
+admin.add_view(ModelView(UserPosts, db.session))
 

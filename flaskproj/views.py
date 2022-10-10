@@ -1,3 +1,4 @@
+from crypt import methods
 from datetime import datetime
 from flask import abort, flash, redirect, render_template, request, session, url_for
 from flask_bootstrap import Bootstrap
@@ -11,8 +12,8 @@ from flask_login import (
 
 from flaskproj import app, db
 
-from .forms import FormAddCard, FormAvt, FormReg, New_Psw
-from .models import Bascet, Orderuser, Product, Usercard, Userprofile, TrendingProduct
+from .forms import FormAddCard, FormAvt, FormReg, New_Psw, PostUser
+from .models import Bascet, Orderuser, Product, Usercard, Userprofile, TrendingProduct, UserPosts
 from .other import (
     add_balance,
     get_data_list_product_and_total_price,
@@ -88,7 +89,7 @@ def index_description(item):
     if len(limit_entries) > 0:
         return render_template(
             "description.html",
-            title="Главная страница",
+            title="Товар",
             data_product=data_product,
             next_item=next_item,
             back_item=back_item,
@@ -103,7 +104,7 @@ def index_description(item):
         db.session.commit()
         return redirect(url_for("index_description",item=item))
     
-    return render_template('description.html',data_product=data_product,next_item=next_item,back_item=back_item)
+    return render_template('description.html',data_product=data_product,next_item=next_item,back_item=back_item,title="Товар",)
 
 
 @app.route("/registration", methods=["POST", "GET"])
@@ -372,6 +373,16 @@ def card_remove():
     db.session.commit()
     return redirect(url_for('index_card'))
 
+@app.route("/post", methods=["POST", "GET"])
+@login_required
+def post_write():
+    forma=PostUser()
+    if forma.validate_on_submit():
+        post = UserPosts(date=datetime.now().strftime("%d-%m-%Y %H:%M:%S"), title=request.form['title'],body=request.form['body'],user_name=current_user.name,user_id=current_user.id)
+        db.session.add(post)
+        db.session.commit()
+        return redirect(url_for('post_write'))
+    return render_template('post.html', forma=forma)
 
 @app.errorhandler(404)
 def pageNot(error):

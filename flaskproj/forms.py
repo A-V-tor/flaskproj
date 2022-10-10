@@ -1,3 +1,4 @@
+from logging import PlaceHolder
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Email, Length
@@ -61,3 +62,16 @@ class New_Psw(FlaskForm):
         "Повтор пароля ", validators=[DataRequired(), Length(min=4, max=20)]
     )
     submit = SubmitField("Сменить пароль")
+
+
+class PostUser(FlaskForm):
+    title = StringField(
+        "Заголовок отзыва",
+        validators=[DataRequired(), Length(min=4, max=50)]
+    )
+    body = TextAreaField('Комментарий',
+        validators=[DataRequired(), Length(min=4, max=250)]
+    )
+    submit = SubmitField("Оставить отзыв")
+
+    
