@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="product">
+   
+    
+    <div class="pr">
+        <img src="{{data_product.image}}" alt="" width="440" height="440" />
+    </div>
+    
+    <div class="description">
+        <br>
+        <center><h2>{{data_product.name}}</h2></center>
+        <hr>
+        <p>{{data_product.product_story}} 
+        <hr>
+        <strong>{{data_product.price}} $</strong>
+        {% if  current_user.is_authenticated %}
+        {% if  limit!=True %}
+        <form  action="#" method="post">
+            <td></br><button type="submit" name="productname" value="" class="but-2">Добавить &nbsp; </button></td>
+        </form>
+        {% else %}
+        <form action="/rm-desc" method="post">
+            <td></br><button type="submit" name="product_remove_for_description" value="{{data_product.id}}" class="but-2">Удалить
+                    &nbsp;
+                </button></td>
+        </form>
+        
+        {% endif %}{% endif %}
+        <form action="/">
+            <button class="but-3" value="close" name="close">Назад</button>
+        </form>
+    </div><a class="next-a" href="/description/{{next_item.name}}"> >>>> </a>  <a class="next-a2" href="/description/{{back_item.name}}"> <<<< </a>
+</div>
+
+
+
+{% endblock %} <!-- <a href="/description/{{next_item.name}}"> >>> </a> -->

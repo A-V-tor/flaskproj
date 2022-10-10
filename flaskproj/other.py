@@ -78,3 +78,21 @@ def set_trend(trending_product,trend_list):
                 dict(item=item_new)
             )
         db.session.commit()
+
+
+def get_next_product_item(lst, current_item):
+    for n,i in enumerate(lst):
+        if i == current_item:
+            try:
+                return lst[n+1]
+            except:
+                return lst[0]
+
+
+def get_back_product_item(lst, current_item):
+    for n,i in enumerate(lst):
+        if i == current_item:
+            try:
+                return lst[n-1]
+            except:
+                return lst[-1]

@@ -1,3 +1,5 @@
+from flask_admin.contrib.sqla import ModelView
+from flask_admin import BaseView, expose
 from datetime import datetime
 from flask import abort, flash, redirect, render_template, request, session, url_for
 from flask_bootstrap import Bootstrap
@@ -9,7 +11,7 @@ from flask_login import (
     logout_user,
 )
 
-from flaskproj import app, db
+from flaskproj import app, db,admin
 
 from .forms import FormAddCard, FormAvt, FormReg, New_Psw
 from .models import Bascet, Orderuser, Product, Usercard, Userprofile, TrendingProduct
@@ -19,14 +21,31 @@ from .other import (
     get_data_product_bascet_and_card,
     get_item,
     set_new_amount,
-    set_trend
+    set_trend,
+    get_next_product_item,
+    get_back_product_item,
 )
 
 Bootstrap(app)
+
 login_manager = LoginManager(app)
 login_manager.login_view = "index_autorization"
 login_manager.login_message = " Нужно пройти процесс авторизации!"
 login_manager.login_message_category = "error"
+
+
+class AnalyticsView(BaseView):
+    @expose('/')
+    def index(self):
+        user_amount = Userprofile.query.all()
+        return self.render('admin/analytics_index.html',user_amount=len(user_amount))
+
+
+admin.add_view(AnalyticsView(name='Analytics', endpoint='analytics'))
+admin.add_view(ModelView(Userprofile, db.session))
+admin.add_view(ModelView(Product, db.session))
+admin.add_view(ModelView(Orderuser, db.session))
+admin.add_view(ModelView(Usercard, db.session))
 
 
 @login_manager.user_loader
@@ -69,6 +88,38 @@ def index_main():
     return render_template(
         "main.html", title="Главная страница", data_product=data_product
     )
+
+
+@app.route("/description/<item>", methods=["POST", "GET"])
+@login_required
+def index_description(item):
+    data_product = Product.query.filter_by(name=item).order_by(Product.name).first()
+    all_product = Product.query.order_by(Product.name).all()
+    next_item = get_next_product_item(all_product, data_product)
+    back_item = get_back_product_item(all_product, data_product)
+    name_product = data_product.id
+    limit_entries = Bascet.query.filter_by(
+        user_id=current_user.id, product_id=int(name_product)
+    ).all()
+    if len(limit_entries) > 0:
+        return render_template(
+            "description.html",
+            title="Главная страница",
+            data_product=data_product,
+            next_item=next_item,
+            back_item=back_item,
+            limit=True,
+        )
+
+    if 'productname' in request.form:
+        bascet_write = Bascet(
+            user_id=current_user.id, product_id=int(name_product)
+        )
+        db.session.add(bascet_write)
+        db.session.commit()
+        return redirect(url_for("index_description",item=item))
+    
+    return render_template('description.html',data_product=data_product,next_item=next_item,back_item=back_item)
 
 
 @app.route("/registration", methods=["POST", "GET"])
@@ -274,6 +325,18 @@ def remove_product():
     return redirect(url_for("index_shopping_basket"))
 
 
+@app.route("/rm-desc", methods=["POST", "GET"])
+@login_required
+def remove_product_for_description():
+    id_product = [i for i in request.form.values()]
+    product_for_remove = Bascet.query.filter_by(
+        user_id=current_user.id, product_id=int(*id_product)
+    ).first()
+    db.session.delete(product_for_remove)
+    db.session.commit()
+    return redirect(url_for("index_description",item=Product.query.get(id_product).name))
+
+
 @app.route("/exit_in_bascet", methods=["POST", "GET"])
 @login_required
 def exit_in_bascet():
@@ -325,10 +388,6 @@ def card_remove():
     db.session.commit()
     return redirect(url_for('index_card'))
 
-
-@app.route("/test", methods=["POST", "GET"])
-def test():
-    return render_template('test.html')
 
 @app.errorhandler(404)
 def pageNot(error):

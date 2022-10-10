@@ -10,8 +10,14 @@
     <center>
         <h2>Итоговая цена: {{total_price}}</h2>
     </center>
-    {% if no_amount %} <center><h2>Не хватает товара! </h2></center> {% endif %}
-    {% if order_number %}<center><h4>Заказ № {{order_number}} оформлен</h4></center>{% endif %} {% if many %}<center><h4>{{many}}</h4></center>{% endif %}
+    {% if no_amount %} <center>
+        <h2>Не хватает товара! </h2>
+    </center> {% endif %}
+    {% if order_number %}<center>
+        <h4>Заказ № {{order_number}} оформлен</h4>
+    </center>{% endif %} {% if many %}<center>
+        <h4>{{many}}</h4>
+    </center>{% endif %}
     <form action="/exit_in_bascet" method="post">
         <button type="submit" name="Exit" value='Exit' class="but-1">Закрыть</button>
     </form>
@@ -44,7 +50,7 @@
             {% for product in data_product%}
             <tr>
                 <td class=""></br>{{product.name}} &nbsp;</td>
-                <td class=""></br>{{product.product_story}} &nbsp;</td>
+                <td class=""></br>{{product.product_story[:12]}} &nbsp;</td>
                 <td class=""><img src="{{product.image}}" alt="" width="124" height="124" /></td>
                 <td class="">
                     <input type="text" class="" form="order" name="amount_product" value="1" />
