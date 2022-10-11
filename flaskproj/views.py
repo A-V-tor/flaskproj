@@ -1,5 +1,5 @@
-from crypt import methods
 from datetime import datetime
+
 from flask import abort, flash, redirect, render_template, request, session, url_for
 from flask_bootstrap import Bootstrap
 from flask_login import (
@@ -13,16 +13,24 @@ from flask_login import (
 from flaskproj import app, db
 
 from .forms import FormAddCard, FormAvt, FormReg, New_Psw, PostUser
-from .models import Bascet, Orderuser, Product, Usercard, Userprofile, TrendingProduct, UserPosts
+from .models import (
+    Bascet,
+    Orderuser,
+    Product,
+    TrendingProduct,
+    Usercard,
+    UserPosts,
+    Userprofile,
+)
 from .other import (
     add_balance,
+    get_back_product_item,
     get_data_list_product_and_total_price,
     get_data_product_bascet_and_card,
     get_item,
+    get_next_product_item,
     set_new_amount,
     set_trend,
-    get_next_product_item,
-    get_back_product_item,
 )
 
 Bootstrap(app)
@@ -51,7 +59,7 @@ def index_main():
 
             if len(limit_entries) > 0:
                 return render_template(
-                    "main.html",
+                    "index.html",
                     title="Главная страница",
                     name=current_user.name,
                     data_product=data_product,
@@ -64,14 +72,14 @@ def index_main():
             db.session.commit()
 
         return render_template(
-            "main.html",
+            "index.html",
             title="Главная страница",
             name=current_user.name,
             data_product=data_product,
         )
 
     return render_template(
-        "main.html", title="Главная страница", data_product=data_product
+        "index.html", title="Главная страница", data_product=data_product
     )
 
 
@@ -96,15 +104,19 @@ def index_description(item):
             limit=True,
         )
 
-    if 'productname' in request.form:
-        bascet_write = Bascet(
-            user_id=current_user.id, product_id=int(name_product)
-        )
+    if "productname" in request.form:
+        bascet_write = Bascet(user_id=current_user.id, product_id=int(name_product))
         db.session.add(bascet_write)
         db.session.commit()
-        return redirect(url_for("index_description",item=item))
-    
-    return render_template('description.html',data_product=data_product,next_item=next_item,back_item=back_item,title="Товар",)
+        return redirect(url_for("index_description", item=item))
+
+    return render_template(
+        "description.html",
+        data_product=data_product,
+        next_item=next_item,
+        back_item=back_item,
+        title="Товар",
+    )
 
 
 @app.route("/registration", methods=["POST", "GET"])
@@ -168,19 +180,19 @@ def index_shopping_basket():
         )
         item = get_item([int(product[2]) for product in list_product])
         check_data, trend_list = set_new_amount(item, entries_product)
-        if  check_data == None and trend_list == None:
+        if check_data == None and trend_list == None:
             return render_template(
                 "basket.html",
-            name=current_user.name,
-            mail=current_user.mail,
-            data_product=entries_product,
-            total_price=total_price,
-            title="Корзина товаров",
-            balance=balance,
-            card=card,
-            order_number=order_number,
-            many=many,
-            no_amount=True,
+                name=current_user.name,
+                mail=current_user.mail,
+                data_product=entries_product,
+                total_price=total_price,
+                title="Корзина товаров",
+                balance=balance,
+                card=card,
+                order_number=order_number,
+                many=many,
+                no_amount=True,
             )
         set_trend(TrendingProduct, trend_list)
 
@@ -249,7 +261,7 @@ def index_card():
             forma=forma,
             title="Привязка карты",
             card_user=True,
-            num=num
+            num=num,
         )
 
     if forma.validate_on_submit():
@@ -319,7 +331,9 @@ def remove_product_for_description():
     ).first()
     db.session.delete(product_for_remove)
     db.session.commit()
-    return redirect(url_for("index_description",item=Product.query.get(id_product).name))
+    return redirect(
+        url_for("index_description", item=Product.query.get(id_product).name)
+    )
 
 
 @app.route("/exit_in_bascet", methods=["POST", "GET"])
@@ -366,23 +380,32 @@ def trend():
         "trend.html", trend=Product.query.get(trend_product.product_id)
     )
 
+
 @app.route("/remove-card", methods=["POST", "GET"])
 def card_remove():
     current_card = current_user.user_card[0]
     db.session.delete(current_card)
     db.session.commit()
-    return redirect(url_for('index_card'))
+    return redirect(url_for("index_card"))
+
 
 @app.route("/post", methods=["POST", "GET"])
 @login_required
 def post_write():
-    forma=PostUser()
+    forma = PostUser()
     if forma.validate_on_submit():
-        post = UserPosts(date=datetime.now().strftime("%d-%m-%Y %H:%M:%S"), title=request.form['title'],body=request.form['body'],user_name=current_user.name,user_id=current_user.id)
+        post = UserPosts(
+            date=datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            title=request.form["title"],
+            body=request.form["body"],
+            user_name=current_user.name,
+            user_id=current_user.id,
+        )
         db.session.add(post)
         db.session.commit()
-        return redirect(url_for('post_write'))
-    return render_template('post.html', forma=forma)
+        return redirect(url_for("post_write"))
+    return render_template("post.html", forma=forma)
+
 
 @app.errorhandler(404)
 def pageNot(error):

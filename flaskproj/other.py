@@ -1,4 +1,5 @@
 import random
+
 from flaskproj import db
 
 
@@ -64,12 +65,9 @@ def set_new_amount(item, entries_product):
     return rm_list, trend_list
 
 
-
-def set_trend(trending_product,trend_list):
+def set_trend(trending_product, trend_list):
     for i in trend_list:
-        check_data_product = trending_product.query.filter_by(
-            product_id=i[0]
-        ).first()
+        check_data_product = trending_product.query.filter_by(product_id=i[0]).first()
         if check_data_product == None:
             db.session.add(trending_product(product_id=i[0], item=i[1]))
         else:
@@ -81,18 +79,18 @@ def set_trend(trending_product,trend_list):
 
 
 def get_next_product_item(lst, current_item):
-    for n,i in enumerate(lst):
+    for n, i in enumerate(lst):
         if i == current_item:
             try:
-                return lst[n+1]
+                return lst[n + 1]
             except:
                 return lst[0]
 
 
 def get_back_product_item(lst, current_item):
-    for n,i in enumerate(lst):
+    for n, i in enumerate(lst):
         if i == current_item:
             try:
-                return lst[n-1]
+                return lst[n - 1]
             except:
                 return lst[-1]

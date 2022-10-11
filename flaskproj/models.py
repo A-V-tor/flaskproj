@@ -1,7 +1,8 @@
-from flaskproj import db
-from sqlalchemy.orm import relationship
-from sqlalchemy import ForeignKey
 from flask_login import UserMixin
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+
+from flaskproj import db
 
 
 class Userprofile(db.Model, UserMixin):
@@ -14,7 +15,7 @@ class Userprofile(db.Model, UserMixin):
     user_bascet = relationship("Bascet", cascade="all, delete")
     user_card = relationship("Usercard", cascade="all, delete")
     user_order = relationship("Orderuser", cascade="all, delete")
-    user_post = relationship('UserPosts', cascade="all, delete")
+    user_post = relationship("UserPosts", cascade="all, delete")
 
 
 class Product(db.Model):
@@ -75,7 +76,6 @@ class UserPosts(db.Model):
     body = db.Column(db.String(250))
     user_name = db.Column(db.String(100))
     user_id = db.Column(db.Integer, ForeignKey("userprofile.id"))
-    
 
 
 db.create_all()
