@@ -407,6 +407,14 @@ def post_write():
     return render_template("post.html", forma=forma)
 
 
+@app.route('/search',methods=["POST","GET"])
+def product_search():
+    print(request.form["search"])
+    data_for_find = request.form["search"]
+    entries_search_product = Product.query.filter(Product.name.ilike(f'%{data_for_find}%')).all()
+    return render_template('search.html',title='Результат поиска', data_product=entries_search_product)
+
+
 @app.errorhandler(404)
 def pageNot(error):
     return redirect(url_for("index_autorization"))

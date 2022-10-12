@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<table class="table">
+    <thead>
+        <tr>
+            <th colspan="2">
+                <div class="">Товар</div>
+            </th>
+            <th>
+                <div class="">Изображение</div>
+            </th>
+            <th>
+                <div class="">Цена</div>
+            </th>
+            <th>
+                <div class="">Описание</div>
+            </th>
+            <th>
+                <div class="">Количество</div>
+            </th>
+            {% if current_user.is_authenticated %}
+            <th>
+                <div class="">В корзину</div>
+            </th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in data_product %}
+        <tr>
+            <td class="name-product"></br>{{i.name}} &nbsp;</td>
+            <td class="">&nbsp;</td>
+            <td class=""><a href="/description/{{i.name}}"><img src="{{i.image}}" width="100" height="100"></a></td>
+            <td class=""></br>{{i.price}} $ &nbsp; </td>
+            <td class=""></br>{{i.product_story[:12]}}... &nbsp; </td>
+            <td class=""></br>{{i.amount}} &nbsp; </td>
+            {% if current_user.is_authenticated %}
+            <form action="/" method="post">
+                <td></br><button type="submit" name="productname" value="{{i.id}}" class="but-1">Добавить &nbsp;
+                    </button></td>
+            </form>
+            {% endif %}
+            {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
