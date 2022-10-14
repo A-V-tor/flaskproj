@@ -1,47 +1,52 @@
 {% extends 'base.html' %}
 {% block content %}
 {% include 'navbar.html' %}
-<table class="table">
-    <thead>
-        <tr>
-            <th colspan="2">
-                <div class="">Товар</div>
-            </th>
-            <th>
-                <div class="">Изображение</div>
-            </th>
-            <th>
-                <div class="">Цена</div>
-            </th>
-            <th>
-                <div class="">Описание</div>
-            </th>
-            <th>
-                <div class="">Количество</div>
-            </th>
-            {% if current_user.is_authenticated %}
-            <th>
-                <div class="">В корзину</div>
-            </th>
+
+
+<div class="main-lst">
+    <h2>test-shop.test</h2>
+    <br>
+    <hr>
+    {% if current_user.is_authenticated %}
+
+    {% for i in lst %}
+    <div class="list">
+        <ul>
+            <li id="li1">{{i[0].name}}</li>
+            <li><a href="/description/{{i[0].name}}"><img src="{{i[0].image}}" width="80" height="80"></a></li>
+            <li id="price"><p>{{i[0].price}} $</p></li>
+            {% if i.add %}
+            <li>
+                <form action="#" method="post">
+                    <button type="submit" name="product_name" value="{{i[0].id}}" class="">Добавить</button>
+                </form>
+            </li>
+            {% else %}
+            <li>
+                <form action="/rm-main" method="post">
+                    <td></br><button type="submit" name="product_remove" value="{{i[0].id}}" class="">Удалить
+                            &nbsp;
+                        </button></td>
+                </form>
+            </li>
             {% endif %}
-        </tr>
-    </thead>
-    <tbody>
-        {% for i in data_product %}
-        <tr>
-            <td class="name-product"></br>{{i.name}} &nbsp;</td>
-            <td class="">&nbsp;</td>
-            <td class=""><a href="/description/{{i.name}}"><img src="{{i.image}}" width="100" height="100"></a></td>
-            <td class=""></br>{{i.price}} $ &nbsp; </td>
-            <td class=""></br>{{i.product_story[:12]}}... &nbsp; </td>
-            <td class=""></br>{{i.amount}} &nbsp; </td>
-            {% if current_user.is_authenticated %}
-            <form action="#" method="post">
-                <td></br><button type="submit" name="productname" value="{{i.id}}" class="but-1">Добавить &nbsp;
-                    </button></td>
-            </form>
-            {% endif %}
-            {% endfor %}
-    </tbody>
-</table>
+        </ul>
+        <hr>
+        <br>
+    </div>
+    {% endfor %}
+    {% else %}
+    {% for i in data_product %}
+    <div class="list">
+        <ul>
+            <li id="li1">{{i.name}}</li>
+            <li><a href="/description/{{i.name}}"><img src="{{i.image}}" width="80" height="80"></a></li>
+            <li id="price"><p>{{i.price}} $</p></li>
+        </ul>
+        <hr>
+        <br>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
 {% endblock %}

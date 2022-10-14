@@ -110,12 +110,14 @@ p:before {
     color: #78788c;
     box-shadow: 0 0 50px 10px rgb(217, 211, 211);
 }
+
 .but-2 {
     color: #78788c;
     box-shadow: 0 0 50px 10px rgb(217, 211, 211);
     float: right;
     margin-top: 20%;
 }
+
 .but-3 {
     color: #78788c;
     box-shadow: 0 0 50px 10px rgb(217, 211, 211);
@@ -163,7 +165,7 @@ p:before {
 
 .rm-bt {
     margin-left: 70%;
- 
+
     background-color: #e6e6e6;
     box-shadow: 0 0 40px 10px #e6e6e6;
 }
@@ -184,6 +186,7 @@ p:before {
     opacity: 0.7;
     border-radius: 10px;
 }
+
 /* страница тренда */
 
 .price-trend {
@@ -200,7 +203,7 @@ p:before {
 }
 
 .pr {
-    width:440px;
+    width: 440px;
 }
 
 .pr img {
@@ -232,6 +235,7 @@ p:before {
     float: right;
     margin-right: 30%;
 }
+
 .next-a2 {
     font-size: 2em;
     float: right;
@@ -242,14 +246,14 @@ p:before {
 
 .form-i {
     padding: 50px;
-  }
+}
 
-  .form-i textarea {
+.form-i textarea {
     height: 300px;
-  }
-  
-  .form-i input,
-  .form-i textarea {
+}
+
+.form-i input,
+.form-i textarea {
     display: block;
     width: 60%;
     padding: 0 20px;
@@ -259,13 +263,49 @@ p:before {
     border-width: 0;
     border-radius: 20px;
     font-family: 'Roboto', sans-serif;
-  }
-  
-  .form-i input[type="submit"] {
+}
+
+.form-i input[type="submit"] {
     margin-top: 30px;
     background: #abdff0;
     border-bottom: 4px solid #fff;
     color: #2f2f2f;
     font-size: 14px;
     width: 30%;
-  }
+}
+
+/* index */
+
+.main-lst li {
+    display: inline-table;
+    margin-right: 6%;
+    width: 100px;
+}
+
+.main-lst h2 {
+    text-align: center;
+}
+
+#li1 {
+    margin-right: 8%;
+    font-size: 20px;
+}
+
+#price {
+    font-size: 20px;
+}
+
+.main-lst li:last-child {
+    margin-right: 0;
+}
+
+
+.list {
+    padding-left: 20px;
+    text-align: center;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+.navbar-form {
+    position: absolute;
+    left: 60%;
+}

@@ -1,3 +1,4 @@
+from collections import namedtuple
 import random
 
 from flaskproj import db
@@ -94,3 +95,19 @@ def get_back_product_item(lst, current_item):
                 return lst[n - 1]
             except:
                 return lst[-1]
+
+def get_data_list_for_index(data_product, entries_bascet_user):
+    """
+    Формирование списка с именными кортежами обозначающие продукты
+
+    находящиеся и отсутствующие в корзине.
+    """
+    lst = []
+    rm_item = namedtuple('item', 'rm')
+    add_item = namedtuple('item', 'add')
+    for i in data_product:
+        if i.id in [i.product_id for i in entries_bascet_user]:
+            lst.append(rm_item(i))
+        else:
+            lst.append(add_item(i))
+    return lst

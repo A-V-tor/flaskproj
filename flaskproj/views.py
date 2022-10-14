@@ -31,6 +31,7 @@ from .other import (
     get_next_product_item,
     set_new_amount,
     set_trend,
+    get_data_list_for_index
 )
 
 Bootstrap(app)
@@ -51,31 +52,23 @@ def index_main():
     """Обработка главной страницы"""
     data_product = Product.query.filter_by().order_by(Product.name).all()
     if current_user.is_authenticated:
-        if request.method == "POST":
-            name_product = [i for i in request.form.values()]
-            limit_entries = Bascet.query.filter_by(
-                user_id=current_user.id, product_id=int(*name_product)
-            ).all()
-
-            if len(limit_entries) > 0:
-                return render_template(
-                    "index.html",
-                    title="Главная страница",
-                    name=current_user.name,
-                    data_product=data_product,
-                )
-
+        entries_bascet_user = Bascet.query.filter_by(user_id=current_user.id).all()
+        lst = get_data_list_for_index(data_product, entries_bascet_user)
+        if "product_name" in request.form:
+            name_product = [i for i in request.form["product_name"]]
             bascet_write = Bascet(
                 user_id=current_user.id, product_id=int(*name_product)
             )
             db.session.add(bascet_write)
             db.session.commit()
+            return redirect(url_for('index_main'))
 
         return render_template(
             "index.html",
             title="Главная страница",
             name=current_user.name,
             data_product=data_product,
+            lst=lst
         )
 
     return render_template(
@@ -336,6 +329,20 @@ def remove_product_for_description():
     )
 
 
+@app.route("/rm-main", methods=["POST", "GET"])
+@login_required
+def remove_product_for_main():
+    id_product = [i for i in request.form.values()]
+    product_for_remove = Bascet.query.filter_by(
+        user_id=current_user.id, product_id=int(*id_product)
+    ).first()
+    db.session.delete(product_for_remove)
+    db.session.commit()
+    return redirect(
+        url_for("index_main")
+    )
+
+
 @app.route("/exit_in_bascet", methods=["POST", "GET"])
 @login_required
 def exit_in_bascet():
@@ -414,6 +421,10 @@ def product_search():
     entries_search_product = Product.query.filter(Product.name.ilike(f'%{data_for_find}%')).all()
     return render_template('search.html',title='Результат поиска', data_product=entries_search_product)
 
+
+@app.route('/test',methods=["POST","GET"])
+def test():
+    pass
 
 @app.errorhandler(404)
 def pageNot(error):
