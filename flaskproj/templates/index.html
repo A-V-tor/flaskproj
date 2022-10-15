@@ -24,9 +24,7 @@
             {% else %}
             <li>
                 <form action="/rm-main" method="post">
-                    <td></br><button type="submit" name="product_remove" value="{{i[0].id}}" class="">Удалить
-                            &nbsp;
-                        </button></td>
+                    <button type="submit" name="product_remove" value="{{i[0].id}}" class="">Удалить</button>
                 </form>
             </li>
             {% endif %}

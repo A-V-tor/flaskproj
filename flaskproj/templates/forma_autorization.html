@@ -1,25 +1,22 @@
 {% extends 'base.html' %}
 {% include 'navbar.html' %}
 {% block content %}
-<h2>
-  <center>Авторизация</center>
-</h2>
+<h2>Авторизация</h2>
 {% for i, msg in get_flashed_messages(True) %}
 <div class="flash {{i}}">
-  <center>{{msg}}</center>
+{{msg}}
 </div>
 {% endfor %}
-<form action="" method="post" class="registr">
+<form action="" method="post" class="autof">
   <p>{{forma.hidden_tag()}}
     </br>
   <p>{{ forma.name.label() }} {{ forma.name(placeholder='Введите имя') }}
     </br>
   <p>{{ forma.psw.label }} {{ forma.psw(placeholder='Введите пароль') }}
     </br>
-  <p>
-    <center>{{ forma.remember.label() }} {{ forma.remember() }}</center>
-  <p>{{ forma.submit() }}
-  </p>
-  <center><a href="/registration" class="reg">Регистрация</a></center>
+  <p id="remember">
+    {{ forma.remember.label() }} {{ forma.remember() }}
+  <p id="auto">{{ forma.submit() }}</p>
+  <a href="/registration" class="reg" id="reg">Регистрация</a>
 </form>
 {% endblock %}

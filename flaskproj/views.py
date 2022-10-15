@@ -61,7 +61,7 @@ def index_main():
             )
             db.session.add(bascet_write)
             db.session.commit()
-            return redirect(url_for('index_main'))
+            return redirect(request.args.get("next") or url_for('index_main'))
 
         return render_template(
             "index.html",
@@ -114,7 +114,7 @@ def index_description(item):
 
 @app.route("/registration", methods=["POST", "GET"])
 def index_registration():
-    """Обработка регистрации"""
+    """Регистрация юзера"""
     forma = FormReg()
 
     if forma.validate_on_submit():
@@ -124,16 +124,18 @@ def index_registration():
             )
             db.session.add(user)
             db.session.commit()
+            flash("Вы зарегестрированы, авторизуйтесь!", category="succes")
+            return redirect(url_for("index_autorization"))
         except:
-            flash("Пользователь с таким адресом уже есть!", category="error")
-        return redirect(url_for("index_autorization"))
+            flash("Пользователь с таким адресом уже существует!", category="error")
+            return redirect(url_for("index_registration"))
 
     return render_template("forma_registration.html", forma=forma, title="Регистрация")
 
 
 @app.route("/autorization", methods=["POST", "GET"])
 def index_autorization():
-    """Обработка авторизации"""
+    """Авторизация юзера"""
     forma = FormAvt()
 
     if forma.validate_on_submit():
@@ -196,7 +198,7 @@ def index_shopping_basket():
             user_card.balance -= total_price
             new_order = Orderuser(
                 user_id=current_user.id,
-                date=datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+                date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), # ERROR d m Y
                 list_product=list_product,
                 order_price=total_price,
             )
@@ -338,7 +340,7 @@ def remove_product_for_main():
     ).first()
     db.session.delete(product_for_remove)
     db.session.commit()
-    return redirect(
+    return redirect(request.args.get("next") or
         url_for("index_main")
     )
 

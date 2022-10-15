@@ -1,31 +1,28 @@
 {% extends 'base.html' %}
 {% include 'navbar.html' %}
 {% block content %}
-<h2>
-   <center>Регистрация</center>
-</h2>
+<h2>Регистрация</h2>
 {% for i, msg in get_flashed_messages(True) %}
-  <div class="flash {{i}}"><center>{{msg}}</center></div>
+<div class="flash {{i}}">{{msg}}</div>
 {% endfor %}
 <form action="#" method="post" class="registr">
    {{forma.hidden_tag()}}
-<p>{{ forma.name.label() }} {{ forma.name(placeholder='Введите имя') }}
-</br>
+   <p>{{ forma.name.label() }} {{ forma.name(placeholder='Введите имя') }}
+   </br>
    {{ forma.email.label() }}
-   {% if forma.email.errors %}
-   {{ forma.email(class="invalid") }}
-   <span class="invalid-1">
-      {% for i in forma.email.errors %}
-   <center>{{ i }}</center>
-      {% endfor %}
-   </span>
-   {% else %}
-   <p>{{ forma.email(placeholder='Введите email') }}
-   {% endif %}
-   
+      {% if forma.email.errors %}
+         {{ forma.email(class="invalid") }}
+         <span class="invalid-1">
+         {% for i in forma.email.errors %}
+            {{ i }}
+         {% endfor %}
+         </span>
+      {% else %}
+         <p>{{ forma.email(placeholder='Введите email') }}
+      {% endif %}
    </br>
    <p>{{ forma.psw.label }} {{ forma.psw(placeholder='Введите пароль') }}
    </br>
-   <p>{{ forma.submit() }}
+   <p id="resistr">{{ forma.submit() }}
 </form>
 {% endblock %}
