@@ -1,23 +1,26 @@
 {% extends 'base.html' %}
 {% block content %}
 {% include 'navbar.html' %}
-<h1>корзина товаров {{name}}</h1>
-<h4>{{mail}}</h4>
-<h3>Баланс: {{balance}}</h3>
+<div class="profile">
+    <h1>Ваша корзина товаров: {{name}}</h1>
+    <h4>{{mail}}</h4>
+    <h3>Баланс: {{balance}} $</h3>
+</div>
 </br>
 {% if total_price %}
 <div class="order-basc">
-    <center>
-        <h2>Итоговая цена: {{total_price}}</h2>
-    </center>
-    {% if no_amount %} <center>
-        <h2>Не хватает товара! </h2>
-    </center> {% endif %}
-    {% if order_number %}<center>
-        <h4>Заказ № {{order_number}} оформлен</h4>
-    </center>{% endif %} {% if many %}<center>
-        <h4>{{many}}</h4>
-    </center>{% endif %}
+
+    <h2>Итоговая цена: {{total_price}} $</h2>
+
+    {% if no_amount %}
+    <h2>Не хватает товара! </h2>
+    {% endif %}
+    {% if order_number %}
+    <h4 id="num-order">Заказ № {{order_number}} оформлен</h4>
+    {% endif %}
+    {% if many %}
+    <h4 id="no-many">{{many}}</h4>
+    {% endif %}
     <form action="/exit_in_bascet" method="post">
         <button type="submit" name="Exit" value='Exit' class="but-1">Закрыть</button>
     </form>
@@ -46,26 +49,26 @@
             </tr>
         </thead>
         <tbody>
-
-            {% for product in data_product%}
+            {% for product in data_product %}
             <tr>
                 <td class=""></br>{{product.name}} &nbsp;</td>
                 <td class=""></br>{{product.product_story[:12]}} &nbsp;</td>
                 <td class=""><img src="{{product.image}}" alt="" width="124" height="124" /></td>
                 <td class="">
-                    <input type="text" class="" form="order" name="amount_product" value="1" />
+                    <input type="text" id="amount-bascet" form="order" name="amount_product" value="1" />
                 </td>
-                <td class=""></br>&nbsp;&nbsp;&nbsp;{{product.price}}</td>
+                <td class=""></br>&nbsp;&nbsp;&nbsp;{{product.price}} $</td>
+                {% if not total_price%}
                 <form action="/rm" method="post">
-                    <td></br><button type="submit" name="product_remove" value="{{product.id}}" class="but-1">Удалить
-                            &nbsp;
-                        </button></td>
+                    <td></br><button type="submit" name="product_remove" value="{{product.id}}"
+                            class="but-1">Удалить&nbsp;</button></td>
                 </form>
+                {% endif %}
                 {% endfor %}
             </tr>
             <tr>
             </tr>
-            {% if card and data_product %}
+            {% if card and data_product and not total_price%}
             <form action="#" method="post" id="order">
                 <!-- value  содержит цены товаров из корзины -->
                 <td></br><button type="submit" name="make_purchase"

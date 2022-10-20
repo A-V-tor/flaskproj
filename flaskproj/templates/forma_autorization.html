@@ -17,6 +17,6 @@
   <p id="remember">
     {{ forma.remember.label() }} {{ forma.remember() }}
   <p id="auto">{{ forma.submit() }}</p>
-  <a href="/registration" class="reg" id="reg">Регистрация</a>
+  <a href="{{ url_for('index_registration') }}" class="reg" id="reg">Регистрация</a>
 </form>
 {% endblock %}

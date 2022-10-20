@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from flask import abort, flash, redirect, render_template, request, session, url_for
 from flask_bootstrap import Bootstrap
 from flask_login import (
@@ -153,94 +152,6 @@ def index_autorization():
     return render_template("forma_autorization.html", forma=forma, title="Авторизация")
 
 
-@app.route("/basket", methods=["POST", "GET"])
-@login_required
-def index_shopping_basket():
-    card = False
-    order_number = False
-    many = False
-    balance = "карта не привязана"
-    entries_product, user_card = get_data_product_bascet_and_card(
-        current_user.id, Bascet, Product, Usercard
-    )
-    if user_card:
-        balance = int(user_card.balance)
-        card = True
-
-    if "make_purchase" in request.form:
-        list_product, total_price = get_data_list_product_and_total_price(
-            [i.name for i in entries_product],
-            [float(price) for price in request.form["make_purchase"].split()],
-            [int(amount) for amount in request.form.getlist("amount_product")],
-        )
-        item = get_item([int(product[2]) for product in list_product])
-        check_data, trend_list = set_new_amount(item, entries_product)
-        if check_data == None and trend_list == None:
-            return render_template(
-                "basket.html",
-                name=current_user.name,
-                mail=current_user.mail,
-                data_product=entries_product,
-                total_price=total_price,
-                title="Корзина товаров",
-                balance=balance,
-                card=card,
-                order_number=order_number,
-                many=many,
-                no_amount=True,
-            )
-        set_trend(TrendingProduct, trend_list)
-
-        if balance - total_price > 0 and total_price != 0:
-            rm_bascet = Bascet.query.filter_by(user_id=current_user.id).all()
-            [db.session.delete(rm) for rm in rm_bascet]
-            [db.session.delete(rm) for rm in check_data]
-            user_card.balance -= total_price
-            new_order = Orderuser(
-                user_id=current_user.id,
-                date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), # ERROR d m Y
-                list_product=list_product,
-                order_price=total_price,
-            )
-            db.session.add(new_order)
-            db.session.commit()
-            order_number = (
-                Orderuser.query.filter_by(user_id=current_user.id)
-                .order_by(Orderuser.date)
-                .all()[-1]
-                .id
-            )
-
-        if balance - total_price < 0:
-            user_card.balance = 1000
-            db.session.commit()
-            many = "Не хватает денег!"
-
-        return render_template(
-            "basket.html",
-            name=current_user.name,
-            mail=current_user.mail,
-            data_product=entries_product,
-            total_price=total_price,
-            title="Корзина товаров",
-            balance=balance,
-            card=card,
-            order_number=order_number,
-            many=many,
-        )
-
-    return render_template(
-        "basket.html",
-        name=current_user.name,
-        mail=current_user.mail,
-        data_product=entries_product,
-        title="Корзина товаров",
-        balance=balance,
-        card=card,
-        many=many,
-    )
-
-
 @app.route("/add-card", methods=["POST", "GET"])
 @login_required
 def index_card():
@@ -315,6 +226,7 @@ def remove_product():
     db.session.delete(product_for_remove)
     db.session.commit()
     return redirect(url_for("index_shopping_basket"))
+    
 
 
 @app.route("/rm-desc", methods=["POST", "GET"])
@@ -424,9 +336,88 @@ def product_search():
     return render_template('search.html',title='Результат поиска', data_product=entries_search_product)
 
 
-@app.route('/test',methods=["POST","GET"])
-def test():
-    pass
+@app.route('/bascet',methods=["POST","GET"])
+@login_required
+def index_shopping_basket():
+    card = False
+    order_number = False
+    many = False
+    balance = "карта не привязана"
+    entries_product, user_card = get_data_product_bascet_and_card(
+        current_user.id, Bascet, Product, Usercard
+    )
+    if user_card:
+        balance = int(user_card.balance)
+        card = True
+    if "make_purchase" in request.form:
+        list_product, total_price = get_data_list_product_and_total_price(
+            [i.name for i in entries_product],
+            [float(price) for price in request.form["make_purchase"].split()],
+            [int(amount) for amount in request.form.getlist("amount_product")],
+        )
+        item = get_item([int(product[2]) for product in list_product])
+        check_data, trend_list = set_new_amount(item, entries_product)
+        if check_data is None and trend_list is None:
+            return render_template(
+                "bascet.html",
+                name=current_user.name,
+                mail=current_user.mail,
+                data_product=entries_product, 
+                total_price=total_price,
+                title="Корзина товаров",
+                balance=balance,
+                card=card,
+                order_number=order_number,
+                many=many,
+                no_amount=True,
+            )
+
+        if balance - total_price > 0 and total_price != 0:
+            set_trend(TrendingProduct, trend_list)
+            rm_bascet = Bascet.query.filter_by(user_id=current_user.id).all()
+            [db.session.delete(rm) for rm in rm_bascet]
+            [db.session.delete(rm) for rm in check_data]
+            user_card.balance -= total_price
+            new_order = Orderuser(
+                user_id=current_user.id,
+                date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), # ERROR d m Y
+                list_product=list_product,
+                order_price=total_price,
+            )
+            db.session.add(new_order)
+            db.session.commit()
+            order_number = (
+                Orderuser.query.filter_by(user_id=current_user.id)
+                .order_by(Orderuser.date)
+                .all()[-1]
+                .id
+            ) # при обновлении окна с плывающем дивом отсылается повторный пост запрос, возможное решение написание шаблона для редиректа
+
+        if balance - total_price < 0:
+            many = "Не хватает денег!"
+
+        return render_template(
+            "bascet.html",
+            name=current_user.name,
+            mail=current_user.mail,
+            data_product=entries_product,
+            total_price=total_price,
+            title="Корзина товаров",
+            balance=balance,
+            card=card,
+            order_number=order_number,
+            many=many,
+        )
+    return render_template(
+        "bascet.html",
+        name=current_user.name,
+        mail=current_user.mail,
+        data_product=entries_product,
+        title="Корзина товаров",
+        balance=balance,
+        card=card,
+        many=many,
+    )
 
 @app.errorhandler(404)
 def pageNot(error):

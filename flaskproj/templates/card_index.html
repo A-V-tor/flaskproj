@@ -3,21 +3,21 @@
 {% include 'navbar.html' %}
 
 {% if not card_user %}
-<h2>
-    <center>Добавление карты оплаты</center>
-</h2>
+<h2>Добавление карты оплаты</h2>
 {% if limit_reached %}
     <div class="add-card">
-        <center><h2>{{limit_reached}}</h2></center>
+        <h2>{{limit_reached}}</h2>
         <form action="#" method="post">
-            <button type="submit" name="Exit" value='Exit' class="but-1">Закрыть</button></form>
+            <button type="submit" name="Exit" value='Exit' class="">Закрыть</button>
+        </form>
     </div>
 {% endif %}
 {% if successfully_added %}
     <div class="add-card">
-        <center><h2>Ваша карта успешно добавлена!</h2></center>
+        <h2>Ваша карта успешно добавлена!</h2>
         <form action="#" method="post">
-            <button type="submit" name="Exit" value='Exit' class="but-1">Закрыть</button></form>
+            <button type="submit" name="Exit" value='Exit' class="">Закрыть</button>
+        </form>
     </div>
 {% endif %}
 {% for i, msg in get_flashed_messages(True) %}
