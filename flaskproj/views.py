@@ -391,7 +391,10 @@ def index_shopping_basket():
                 .order_by(Orderuser.date)
                 .all()[-1]
                 .id
-            ) # при обновлении окна с плывающем дивом отсылается повторный пост запрос, возможное решение написание шаблона для редиректа
+            ) # при обновлении окна с плывающем дивом отсылается повторный пост запрос, возможное решение написание шаблона для редиректа,order_number=order_number,total_price=total_price
+            session['order_number'] = order_number
+            session['total_price'] = total_price
+            return redirect(url_for('pay_order'))
 
         if balance - total_price < 0:
             many = "Не хватает денег!"
@@ -418,6 +421,20 @@ def index_shopping_basket():
         card=card,
         many=many,
     )
+
+# import requests
+@app.route('/pay',methods=["POST","GET"])
+@login_required
+def pay_order():
+    print(session['order_number'],session['total_price'])
+    # return f"{requests.post('/pay', data = {'sum':session['total_price']})}"
+    return render_template(
+        'pay.html',
+        order_number = session['order_number'],
+        total_price = session['total_price'],
+        )
+    #return f"{session['order_number']},{session['total_price']}"
+    # return redirect(url_for('https://demo.paykeeper.ru/create/'))
 
 @app.errorhandler(404)
 def pageNot(error):

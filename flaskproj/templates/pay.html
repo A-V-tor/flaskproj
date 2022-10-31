@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<form method='POST' action='https://demo.paykeeper.ru/create/' class="registr-2">
+    Введите сумму оплаты: 
+      <input type='text' name='sum' value={{total_price}}> <br />
+    Введите номер заказа: 
+      <input type='text' name='orderid' value={{order_number}}> <br />
+    Введите название услуги: 
+      <input type='text' name='service_name' value='Тестовая оплата'/> <br />
+    <input type='submit' value='Перейти к оплате' />
+  </form>
+
+{% endblock %}
