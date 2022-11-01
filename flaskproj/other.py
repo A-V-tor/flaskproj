@@ -1,8 +1,10 @@
 from collections import namedtuple
+import json
 import random
 
 from flaskproj import db
-
+# https://demo.paykeeper.ru/payments/invoices
+# https://docs.paykeeper.ru/metody-integratsii/poluchenie-pryamoj-ssylki-na-oplatu/
 
 def add_balance():
     """Генерация едениц оплаты для карты пользователя"""
@@ -111,3 +113,68 @@ def get_data_list_for_index(data_product, entries_bascet_user):
         else:
             lst.append(add_item(i))
     return lst
+
+import base64
+import requests
+
+
+pay_login = 'demo'
+pay_password = 'demo'
+pay_domain = 'http://demo.paykeeper.ru'
+            
+def get_encoding_logpass(): 
+    logpass_for_decoding = f'{pay_login}:{pay_password}'
+    logpass__bytes = logpass_for_decoding.encode('ascii')
+    base64_bytes = base64.b64encode(logpass__bytes)
+    base64_logpass = base64_bytes.decode('ascii')
+    print('base64_logpass',base64_logpass)
+    return base64_logpass
+
+
+
+
+def create_payment(order, cost):
+    HEADERS = {
+    'content-type': 'application/x-www-form-urlencoded',
+    'authorization': f'Basic {get_encoding_logpass()}',
+}
+    # получаем токен из paykeeper
+    url = f'{pay_domain}/info/settings/token/'
+    sess = requests.Session()
+    response = sess.get(url, headers=HEADERS)
+    print('response',response.text)
+    try:
+        response_json = response.json()
+    except Exception:
+        return None
+
+    if response_json:
+        token = response_json.get('token')
+        print('token',token)
+        # при наличии токена создаем заказ и отправляем для формирования ссылки на оплату
+        if token:
+            url = f'{pay_domain}/change/invoice/preview/'
+            payload = {
+                'pay_amount': cost,
+                'orderid': order,
+                'token': token
+            }
+            #payload = json.dumps(payload)
+
+            #print('payload',payload)
+            response = sess.post(url, data=payload, headers=HEADERS, allow_redirects=True)
+            try:
+                print('response2',response.json())
+                print('response2',response.content)
+            except:
+                print('response2',response.text)
+               
+            try:
+                response_json = response.json()
+            except Exception:
+                return None
+
+            invoice_id = response_json.get('invoice_id')
+            # возвращаем ссылку на оплату
+            return f'{pay_domain}/bill/{invoice_id}/'
+    return None

@@ -30,7 +30,8 @@ from .other import (
     get_next_product_item,
     set_new_amount,
     set_trend,
-    get_data_list_for_index
+    get_data_list_for_index,
+    create_payment
 )
 
 Bootstrap(app)
@@ -392,9 +393,11 @@ def index_shopping_basket():
                 .all()[-1]
                 .id
             ) # при обновлении окна с плывающем дивом отсылается повторный пост запрос, возможное решение написание шаблона для редиректа,order_number=order_number,total_price=total_price
-            session['order_number'] = order_number
-            session['total_price'] = total_price
-            return redirect(url_for('pay_order'))
+            # session['order_number'] = order_number
+            # session['total_price'] = total_price
+            # return redirect(url_for('pay_order'))
+            resp = create_payment(order_number,total_price)
+            return f"<a href={resp}>оплата</a>"
 
         if balance - total_price < 0:
             many = "Не хватает денег!"
@@ -427,7 +430,7 @@ def index_shopping_basket():
 @login_required
 def pay_order():
     print(session['order_number'],session['total_price'])
-    # return f"{requests.post('/pay', data = {'sum':session['total_price']})}"
+    # return f"{requests.post('https://demo.paykeeper.ru/create/', data = {'sum':session['total_price']})}"
     return render_template(
         'pay.html',
         order_number = session['order_number'],
