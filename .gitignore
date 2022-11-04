@@ -3,3 +3,5 @@ flaskproj/__pycache__/
 tests/__pycache__/
 .DS_Store
 .coverage
+__pycache__
+.env

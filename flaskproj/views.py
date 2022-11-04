@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import abort, flash, redirect, render_template, request, session, url_for
 from flask_bootstrap import Bootstrap
+from flask_mail import Message
 from flask_login import (
     LoginManager,
     current_user,
@@ -9,7 +10,7 @@ from flask_login import (
     logout_user,
 )
 
-from flaskproj import app, db
+from flaskproj import app, db, mail
 
 from .forms import FormAddCard, FormAvt, FormReg, New_Psw, PostUser
 from .models import (
@@ -49,7 +50,7 @@ def load_user(user):
 
 @app.route("/", methods=["POST", "GET"])
 def index_main():
-    """Обработка главной страницы"""
+    """ Обработка главной страницы """
     data_product = Product.query.filter_by().order_by(Product.name).all()
     if current_user.is_authenticated:
         entries_bascet_user = Bascet.query.filter_by(user_id=current_user.id).all()
@@ -116,6 +117,9 @@ def index_description(item):
 def index_registration():
     """Регистрация юзера"""
     forma = FormReg()
+    # msg = Message("Токен регистрации", recipients=['test@gmail.com'])
+    # msg.body = f"{current_user.name} в сети"
+    # mail.send(msg)
 
     if forma.validate_on_submit():
         try:
