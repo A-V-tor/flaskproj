@@ -10,7 +10,7 @@ from flask_mail import Mail
 
 load_dotenv(find_dotenv())
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.urandom(12)
+app.config["SECRET_KEY"] = os.getenv('SECRET_KEY')
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://a-v-tor@localhost/mybase"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["FLASK_ADMIN_SWATCH"] = "cerulean"

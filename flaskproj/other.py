@@ -1,3 +1,5 @@
+from itsdangerous import URLSafeTimedSerializer
+import os
 from collections import namedtuple
 import json
 import random
@@ -178,3 +180,26 @@ def create_payment(order, cost):
             # возвращаем ссылку на оплату
             return f'{pay_domain}/bill/{invoice_id}/'
     return None
+
+
+
+def generate_confirmation_token(email):
+    ''' Генерация токена подтверждения '''
+    serializer = URLSafeTimedSerializer(os.getenv('SECRET_KEY'), salt="activate")
+    return serializer.dumps(email)
+
+
+def confirm_token(token, expiration=3600):
+    '''Чтение токена, токен действителен на протяжении часа'''
+    serializer = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
+    try:
+        email = serializer.loads(
+            token,
+            salt="activate",
+            max_age=expiration
+        )
+    except:
+        return False
+    return email
+
+

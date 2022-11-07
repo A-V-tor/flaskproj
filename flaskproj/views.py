@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from flask import abort, flash, redirect, render_template, request, session, url_for
 from flask_bootstrap import Bootstrap
@@ -32,7 +33,9 @@ from .other import (
     set_new_amount,
     set_trend,
     get_data_list_for_index,
-    create_payment
+    create_payment,
+    generate_confirmation_token,
+    confirm_token
 )
 
 Bootstrap(app)
@@ -77,6 +80,51 @@ def index_main():
     )
 
 
+@app.route("/registration", methods=["POST", "GET"])
+def index_registration():
+    """Регистрация юзера"""
+    forma = FormReg()
+    if forma.validate_on_submit():
+        try:
+            user = Userprofile(
+                mail=forma.email.data, name=forma.name.data, psw=forma.psw.data
+            )
+            db.session.add(user)
+            db.session.commit()
+            token = generate_confirmation_token(user.mail)
+            confirm_url = url_for('confirm_email', token=token, _external=True)
+            html = render_template('activ.html',confirm_url=confirm_url )
+            msg = Message("Подтверждение регистрации",  recipients=[os.getenv('test_mail')])
+            msg.html = html
+            mail.send(msg)
+            flash("Вы зарегестрированы, проверьте почту!", category="succes")
+            return redirect(url_for("index_autorization"))
+        except:
+            flash("Пользователь с таким адресом уже существует!", category="error")
+            return redirect(url_for("index_registration"))
+
+    return render_template("forma_registration.html", forma=forma, title="Регистрация")
+
+
+@app.route("/confirm/<token>", methods=["POST", "GET"])
+def confirm_email(token):
+    ''' Подтверждение почтового ящика '''
+    try:
+        mail = confirm_token(token)
+    except:
+        flash("Ссылка для подтверждения недействительна или срок ее действия истек.", category="error")
+        return redirect(url_for("index_registration"))
+    user = Userprofile.query.filter_by(mail=mail).first_or_404()
+    if user.confirmed:
+        flash('Аккаунт уже подтвержден. Пожалуйста, войдите.', category="succes")
+    else:
+        user.confirmed = True
+        db.session.add(user)
+        db.session.commit()
+        flash('Аккаунт подтвержден!', category="succes")
+    return redirect(url_for('index_autorization'))
+
+
 @app.route("/description/<item>", methods=["POST", "GET"])
 @login_required
 def index_description(item):
@@ -97,7 +145,7 @@ def index_description(item):
             back_item=back_item,
             limit=True,
         )
-
+    
     if "productname" in request.form:
         bascet_write = Bascet(user_id=current_user.id, product_id=int(name_product))
         db.session.add(bascet_write)
@@ -113,28 +161,7 @@ def index_description(item):
     )
 
 
-@app.route("/registration", methods=["POST", "GET"])
-def index_registration():
-    """Регистрация юзера"""
-    forma = FormReg()
-    # msg = Message("Токен регистрации", recipients=['test@gmail.com'])
-    # msg.body = f"{current_user.name} в сети"
-    # mail.send(msg)
 
-    if forma.validate_on_submit():
-        try:
-            user = Userprofile(
-                mail=forma.email.data, name=forma.name.data, psw=forma.psw.data
-            )
-            db.session.add(user)
-            db.session.commit()
-            flash("Вы зарегестрированы, авторизуйтесь!", category="succes")
-            return redirect(url_for("index_autorization"))
-        except:
-            flash("Пользователь с таким адресом уже существует!", category="error")
-            return redirect(url_for("index_registration"))
-
-    return render_template("forma_registration.html", forma=forma, title="Регистрация")
 
 
 @app.route("/autorization", methods=["POST", "GET"])

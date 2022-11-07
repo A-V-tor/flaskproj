@@ -1,3 +1,4 @@
+import datetime
 from flask_login import UserMixin
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
@@ -12,11 +13,17 @@ class Userprofile(db.Model, UserMixin):
     mail = db.Column(db.String(100), unique=True)
     name = db.Column(db.String(100))
     psw = db.Column(db.String(300))
+    data_registered = db.Column(db.DateTime(), default=datetime.datetime.utcnow)
+    admin = db.Column(db.Boolean, nullable=False, default=False)
+    confirmed = db.Column(db.Boolean, nullable=False, default=False)
     user_bascet = relationship("Bascet", cascade="all, delete")
     user_card = relationship("Usercard", cascade="all, delete")
     user_order = relationship("Orderuser", cascade="all, delete")
     user_post = relationship("UserPosts", cascade="all, delete")
 
+    def __str__(self):
+        return self.name
+    
 
 class Product(db.Model):
     """Модель товара"""
