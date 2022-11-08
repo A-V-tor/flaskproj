@@ -11,9 +11,6 @@
     {% if order_number %}
     <h4 id="num-order">Заказ № {{order_number}} оформлен</h4>
     {% endif %}
-    {% if many %}
-    <h4 id="no-many">{{many}}</h4>
-    {% endif %}
     <form action="/exit_in_bascet" method="post">
         <button type="submit" name="Exit" value='Exit' class="">Закрыть</button>
     </form>
@@ -55,7 +52,7 @@
         <br>
     </div>
     {% endfor %}
-    {% if card and data_product and not total_price%}
+    {% if data_product and not total_price%}
             <form action="#" method="post" id="order">
                 <!-- value  содержит цены товаров из корзины -->
                 <td></br><button type="submit" name="make_purchase"

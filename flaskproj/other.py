@@ -22,18 +22,15 @@ def get_item(item):
         yield i
 
 
-def get_data_product_bascet_and_card(item, bascet, product, usercard):
+def get_data_product_bascet(item, bascet, product):
     """
     Выбирается запись корзины для текущего юзера, затем
 
-    создается список с записями товаров корзины. В user_card
-
-    хранится карта оплаты.
+    создается список с записями товаров корзины.
     """
     res = [i for i in bascet.query.filter_by(user_id=item).all()]
     entries_product = [product.query.filter_by(id=i.product_id).first() for i in res]
-    user_card = usercard.query.filter_by(user_id=item).first()
-    return entries_product, user_card
+    return entries_product 
 
 
 def get_data_list_product_and_total_price(name_product, price, amount):
@@ -44,8 +41,8 @@ def get_data_list_product_and_total_price(name_product, price, amount):
     """
     zip_data = zip(name_product, price, amount)
     list_product_data = [i for i in zip_data]
-    data_for_order = zip(price, amount)
-    total_price = sum([i[0] * i[1] for i in [i for i in data_for_order]])
+    data_for_total_price= zip(price, amount)
+    total_price = sum([i[0] * i[1] for i in [i for i in data_for_total_price]])
     return list_product_data, total_price
 
 
@@ -54,7 +51,7 @@ def set_new_amount(item, entries_product):
     Запись в БД нового значения  кол-ва товара
     и возврат списка записей о нулевом остатке.
     """
-    new_amount = [value.amount - next(item) for value in entries_product]
+    new_amount = [current.amount - next(item) for current in entries_product]
     rm_list = []
     trend_list = []
     for product in [value for value in entries_product]:
@@ -123,6 +120,7 @@ import requests
 pay_login = 'demo'
 pay_password = 'demo'
 pay_domain = 'http://demo.paykeeper.ru'
+
             
 def get_encoding_logpass(): 
     logpass_for_decoding = f'{pay_login}:{pay_password}'
@@ -132,14 +130,12 @@ def get_encoding_logpass():
     print('base64_logpass',base64_logpass)
     return base64_logpass
 
-
-
-
-def create_payment(order, cost):
-    HEADERS = {
+HEADERS = {
     'content-type': 'application/x-www-form-urlencoded',
     'authorization': f'Basic {get_encoding_logpass()}',
 }
+
+def create_payment(order, cost):
     # получаем токен из paykeeper
     url = f'{pay_domain}/info/settings/token/'
     sess = requests.Session()
@@ -158,29 +154,32 @@ def create_payment(order, cost):
             url = f'{pay_domain}/change/invoice/preview/'
             payload = {
                 'pay_amount': cost,
-                'orderid': order,
+                'orderid': order.id,
                 'token': token
             }
-            #payload = json.dumps(payload)
-
-            #print('payload',payload)
             response = sess.post(url, data=payload, headers=HEADERS, allow_redirects=True)
-            try:
-                print('response2',response.json())
-                print('response2',response.content)
-            except:
-                print('response2',response.text)
-               
             try:
                 response_json = response.json()
             except Exception:
                 return None
 
             invoice_id = response_json.get('invoice_id')
+            order.invoice_id = str(invoice_id)
             # возвращаем ссылку на оплату
             return f'{pay_domain}/bill/{invoice_id}/'
     return None
 
+
+def check_status(order):
+    ''' Проверка статуса оплаты заказа '''
+
+    url = f'{pay_domain}/info/invoice/byid/?id={order.invoice_id}'
+    response = requests.request('GET', url, headers=HEADERS)
+
+    # получаем статус платежа
+    response_json = response.json()
+    status = response_json.get('status')
+    return status
 
 
 def generate_confirmation_token(email):

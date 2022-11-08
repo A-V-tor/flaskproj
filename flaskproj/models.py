@@ -68,6 +68,7 @@ class Orderuser(db.Model):
     date = db.Column(db.DateTime)
     list_product = db.Column(db.JSON)
     order_price = db.Column(db.Integer)
+    invoice_id = db.Column(db.String(255))
 
 
 class TrendingProduct(db.Model):

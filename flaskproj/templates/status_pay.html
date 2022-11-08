@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+{% if pay %}
+  {{ pay }}
+{% else %}
+Не оплачено
+{% endif %}
+{% endblock %}
