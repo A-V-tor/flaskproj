@@ -42,8 +42,8 @@
             </li>
             {% if not total_price%}
             <li>
-                <form action="/rm" method="post">
-                    <button type="submit" name="product_remove" value="{{i.id}}" class="">Удалить</button>
+                <form action="/remove" method="post">
+                    <button type="submit" name="product_remove_for_bascet" value="{{i.id}}" class="">Удалить</button>
                 </form>
             </li>
             {% endif %}

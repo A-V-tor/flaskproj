@@ -189,34 +189,7 @@ def user_exit():
     return redirect(url_for("index_autorization"))
 
 
-@app.route("/rm", methods=["POST", "GET"])
-@login_required
-def remove_product():
-    id_product = [i for i in request.form.values()]
-    product_for_remove = Bascet.query.filter_by(
-        user_id=current_user.id, product_id=int(*id_product)
-    ).first()
-    db.session.delete(product_for_remove)
-    db.session.commit()
-    return redirect(url_for("index_shopping_basket"))
-    
-
-
-@app.route("/rm-desc", methods=["POST", "GET"])
-@login_required
-def remove_product_for_description():
-    id_product = [i for i in request.form.values()]
-    product_for_remove = Bascet.query.filter_by(
-        user_id=current_user.id, product_id=int(*id_product)
-    ).first()
-    db.session.delete(product_for_remove)
-    db.session.commit()
-    return redirect(
-        url_for("index_description", item=Product.query.get(id_product).name)
-    )
-
-
-@app.route("/rm-main", methods=["POST", "GET"])
+@app.route("/remove", methods=["POST", "GET"])
 @login_required
 def remove_product_for_main():
     id_product = [i for i in request.form.values()]
@@ -225,9 +198,15 @@ def remove_product_for_main():
     ).first()
     db.session.delete(product_for_remove)
     db.session.commit()
-    return redirect(request.args.get("next") or
-        url_for("index_main")
-    )
+    if 'product_remove' in request.form:
+        return redirect(request.args.get("next") or
+            url_for("index_main")
+        )
+    elif 'product_remove_for_description' in request.form:
+        return redirect(
+            url_for("index_description", item=Product.query.get(id_product).name)
+        )
+    return redirect(url_for("index_shopping_basket"))
 
 
 @app.route("/exit_in_bascet", methods=["POST", "GET"])

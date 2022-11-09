@@ -201,4 +201,3 @@ def confirm_token(token, expiration=3600):
         return False
     return email
 
-
