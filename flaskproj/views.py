@@ -11,7 +11,7 @@ from flask_login import (
     logout_user,
 )
 
-from flaskproj import app, db, mail
+from flaskproj import app, db, mail, babel
 
 from .forms import FormAddCard, FormAvt, FormReg, New_Psw, PostUser
 from .models import (
@@ -49,6 +49,13 @@ login_manager.login_message_category = "error"
 @login_manager.user_loader
 def load_user(user):
     return Userprofile.query.get(user)
+
+
+@babel.localeselector
+def get_locale():
+    if request.args.get('lang'):
+        session['lang'] = request.args.get('lang')
+    return session.get('lang', 'ru')
 
 
 @app.route("/", methods=["POST", "GET"])

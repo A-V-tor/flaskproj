@@ -1,12 +1,15 @@
 import os.path as op
+import os
+import random
 
 from flask_admin import Admin, AdminIndexView, BaseView, expose
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
+from flask_admin import form
 
 from flaskproj import app, db
 
-from .models import Orderuser, Product, Usercard, UserPosts, Userprofile
+from .models import Orderuser, Product, UserPosts, Userprofile
 from .views import current_user
 
 
@@ -17,13 +20,14 @@ class MyAdminIndexView(AdminIndexView):
                 return True
         except:
             pass
+    
 
 
 admin = Admin(
     app,
     name="",
     template_mode="bootstrap3",
-    index_view=MyAdminIndexView(name="Админка"),
+    index_view=MyAdminIndexView(name="Админка",menu_icon_type='glyph', menu_icon_value='glyphicon-home'),
 )
 
 
@@ -32,6 +36,13 @@ class AnalyticsView(BaseView):
     def index(self):
         user_amount = Userprofile.query.all()
         return self.render("admin/analytics_index.html", user_amount=len(user_amount))
+
+    def is_accessible(self):
+        try:
+            if current_user.admin:
+                return True
+        except:
+            pass
 
 
 class UserprofileView(ModelView):
@@ -52,6 +63,14 @@ class UserprofileView(ModelView):
     )
     create_modal = True
     edit_modal = True
+ 
+
+    def is_accessible(self):
+        try:
+            if current_user.admin:
+                return True
+        except:
+            pass
 
 
 class UserPostsView(ModelView):
@@ -64,6 +83,14 @@ class UserPostsView(ModelView):
     create_modal = True
     edit_modal = True
     column_descriptions = dict(user_name="автор отправитель")
+  
+
+    def is_accessible(self):
+        try:
+            if current_user.admin:
+                return True
+        except:
+            pass
 
 
 class ProductView(ModelView):
@@ -74,12 +101,23 @@ class ProductView(ModelView):
         product_story="описание",
         amount="количество",
     )
-    column_descriptions = dict(image="перед названием фото указать /static/")
+    column_descriptions = dict(image="хранятся в /static/")
     column_searchable_list = ["name", "product_story", "price"]
     column_filter = ["name", "amount", "price"]
-    column_editable_list = ["image", "price"]
+    column_editable_list = ["price"]
     create_modal = True
     edit_modal = True
+    path = op.abspath(os.getcwd()+ '/flaskproj/static')
+    form_extra_fields = {
+        'image': form.ImageUploadField('изображение',base_path=path)
+    }
+   
+    def is_accessible(self):
+        try:
+            if current_user.admin:
+                return True
+        except:
+            pass
 
 
 class OrderuserView(ModelView):
@@ -96,11 +134,20 @@ class OrderuserView(ModelView):
         invoice_id="идентификатор оплаты",
     )
 
+    def is_accessible(self):
+        try:
+            if current_user.admin:
+                return True
+        except:
+            pass
 
-path = op.join(op.dirname(__file__), "static")
-admin.add_view(FileAdmin(path, "/static/", name="Загрузка файлов"))
-admin.add_view(AnalyticsView(name="Аналитика", endpoint="analytics"))
-admin.add_view(UserprofileView(Userprofile, db.session, name="Пользователи"))
+
+
+path = op.join(op.dirname(__file__), "static/")
+admin.add_view(AnalyticsView(name="Аналитика", endpoint="analytics",menu_icon_type='glyph', menu_icon_value='glyphicon-eye-open'))
+admin.add_view(FileAdmin(path, "/static/", name="Загрузка файлов",menu_icon_type='glyph', menu_icon_value='glyphicon-circle-arrow-down'))
+admin.add_view(UserprofileView(Userprofile, db.session, name="Пользователи",menu_icon_type='glyph', menu_icon_value='glyphicon-user'))
 admin.add_view(ProductView(Product, db.session, name="Товары"))
 admin.add_view(OrderuserView(Orderuser, db.session, name="Заказы"))
 admin.add_view(UserPostsView(UserPosts, db.session, name="Обратная связь"))
+
