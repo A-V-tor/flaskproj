@@ -66,7 +66,7 @@ def index_main():
         entries_bascet_user = Bascet.query.filter_by(user_id=current_user.id).all()
         lst = get_data_list_for_index(data_product, entries_bascet_user)
         if "product_name" in request.form:
-            name_product = [i for i in request.form["product_name"]]
+            name_product = [request.form["product_name"]]
             bascet_write = Bascet(
                 user_id=current_user.id, product_id=int(*name_product)
             )

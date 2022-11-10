@@ -1,5 +1,8 @@
 {% extends 'admin/master.html' %}
 {% block body %}
-<p>Here I'm going to display some data.</p>
-Количество юзеров: {{user_amount}}
+<p>Данные для анализа.</p><br><hr/>
+Количество юзеров: {{ user_amount }}<br>
+Из них с подтвержденой почтой: {{ user_amount_confirmed }}<hr/>
+Наименований товара: {{ products_amount }}<hr/>
+Форм обратной связи оставлено: {{ user_posts }}
 {% endblock %}

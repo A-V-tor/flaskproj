@@ -2,6 +2,7 @@ import os.path as op
 import os
 import random
 
+from wtforms import TextAreaField
 from flask_admin import Admin, AdminIndexView, BaseView, expose
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
@@ -9,7 +10,7 @@ from flask_admin import form
 
 from flaskproj import app, db
 
-from .models import Orderuser, Product, UserPosts, Userprofile
+from .models import Orderuser, Product, UserPosts, Userprofile, Bascet
 from .views import current_user
 
 
@@ -21,7 +22,6 @@ class MyAdminIndexView(AdminIndexView):
         except:
             pass
     
-
 
 admin = Admin(
     app,
@@ -35,7 +35,16 @@ class AnalyticsView(BaseView):
     @expose("/")
     def index(self):
         user_amount = Userprofile.query.all()
-        return self.render("admin/analytics_index.html", user_amount=len(user_amount))
+        user_amount_confirmed = Userprofile.query.filter_by(confirmed=True).all()
+        products_amount = Product.query.all()
+        user_posts = UserPosts.query.all()
+        return self.render(
+            "admin/analytics_index.html",
+            user_amount=len(user_amount),
+            products_amount = len(products_amount),
+            user_amount_confirmed = len(user_amount_confirmed),
+            user_posts = len(user_posts),
+            )
 
     def is_accessible(self):
         try:
@@ -46,6 +55,7 @@ class AnalyticsView(BaseView):
 
 
 class UserprofileView(ModelView):
+    column_display_pk = True
     column_searchable_list = ["name", "mail"]
     column_filters = ["data_registered", "confirmed"]
     column_sortable_list = ["data_registered", "name"]
@@ -73,6 +83,8 @@ class UserprofileView(ModelView):
             pass
 
 
+
+
 class UserPostsView(ModelView):
     column_labels = dict(
         title="Заголовок", body="Текст", date="Дата", user_name="Автор"
@@ -83,8 +95,16 @@ class UserPostsView(ModelView):
     create_modal = True
     edit_modal = True
     column_descriptions = dict(user_name="автор отправитель")
+    form_widget_args = {
+    'body': {
+        'rows': 10,
+        'style': 'font-family: monospace;'
+    }
+}
+    form_overrides = {
+        'body': TextAreaField
+    }
   
-
     def is_accessible(self):
         try:
             if current_user.admin:
@@ -94,6 +114,7 @@ class UserPostsView(ModelView):
 
 
 class ProductView(ModelView):
+    column_display_pk = True
     column_labels = dict(
         name="товар",
         image="изображение",
@@ -107,7 +128,17 @@ class ProductView(ModelView):
     column_editable_list = ["price"]
     create_modal = True
     edit_modal = True
-    path = op.abspath(os.getcwd()+ '/flaskproj/static')
+    form_overrides = {
+        'product_story': TextAreaField
+    }
+    form_widget_args = {
+    'product_story': {
+        'rows': 5,
+        'style': 'font-family: monospace;'
+    }
+}
+
+    path = op.abspath(os.getcwd() + '/flaskproj/static')
     form_extra_fields = {
         'image': form.ImageUploadField('изображение',base_path=path)
     }
@@ -141,6 +172,21 @@ class OrderuserView(ModelView):
         except:
             pass
 
+class BascetView(ModelView):
+    column_display_pk = True
+    column_hide_backrefs = False
+    column_list = ['user_id', 'product_id']
+    column_labels = dict(
+        user_id='владелец',
+        product_id='товар'
+    )
+
+    def is_accessible(self):
+        try:
+            if current_user.admin:
+                return True
+        except:
+            pass
 
 
 path = op.join(op.dirname(__file__), "static/")
@@ -150,4 +196,5 @@ admin.add_view(UserprofileView(Userprofile, db.session, name="Пользоват
 admin.add_view(ProductView(Product, db.session, name="Товары"))
 admin.add_view(OrderuserView(Orderuser, db.session, name="Заказы"))
 admin.add_view(UserPostsView(UserPosts, db.session, name="Обратная связь"))
+admin.add_view(BascetView(Bascet, db.session, name="Корзина товаров"))
 
