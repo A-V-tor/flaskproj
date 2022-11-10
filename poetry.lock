@@ -209,6 +209,17 @@ Flask = ">=0.8"
 visitor = "*"
 
 [[package]]
+name = "flask-ckeditor"
+version = "0.4.6"
+description = "CKEditor integration for Flask."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Flask = "*"
+
+[[package]]
 name = "flask-login"
 version = "0.6.2"
 description = "User authentication and session management for Flask."
@@ -604,7 +615,7 @@ email = ["email-validator"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "6662dd4503f2b546b849b2b68b55d5529b22aa8b9f6b14a4b1c6f5cb649a82d3"
+content-hash = "9727156d059d700894fce1a1a3c910f2c47dd8526fd856de139f3b33bc418056"
 
 [metadata.files]
 alembic = [
@@ -720,6 +731,10 @@ flask-babelex = [
 ]
 flask-bootstrap = [
     {file = "Flask-Bootstrap-3.3.7.1.tar.gz", hash = "sha256:cb08ed940183f6343a64e465e83b3a3f13c53e1baabb8d72b5da4545ef123ac8"},
+]
+flask-ckeditor = [
+    {file = "Flask-CKEditor-0.4.6.tar.gz", hash = "sha256:4b6aa0e831616b86c8c393cb1e5dcae8f62c66c16ef4316071dc7ccf77d4c9a1"},
+    {file = "Flask_CKEditor-0.4.6-py2.py3-none-any.whl", hash = "sha256:aa95bf2fab8d4379fcbe5786310bb4fbae467016ed0149c407101e0e4c278fa8"},
 ]
 flask-login = [
     {file = "Flask-Login-0.6.2.tar.gz", hash = "sha256:c0a7baa9fdc448cdd3dd6f0939df72eec5177b2f7abe6cb82fc934d29caac9c3"},

@@ -11,7 +11,7 @@ from flask_login import (
     logout_user,
 )
 
-from flaskproj import app, db, mail, babel
+from flaskproj import app, db, mail, babel, ckeditor
 
 from .forms import FormAddCard, FormAvt, FormReg, New_Psw, PostUser
 from .models import (
@@ -79,7 +79,7 @@ def index_main():
             title="Главная страница",
             name=current_user.name,
             data_product=data_product,
-            lst=lst
+            lst=lst,
         )
 
     return render_template(
@@ -268,7 +268,7 @@ def post_write():
         post = UserPosts(
             date=datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
             title=request.form["title"],
-            body=request.form["body"],
+            body=request.form.get('body'),
             user_name=current_user.name,
             user_id=current_user.id,
         )

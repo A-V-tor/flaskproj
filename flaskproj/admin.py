@@ -98,13 +98,12 @@ class UserPostsView(ModelView):
     form_widget_args = {
     'body': {
         'rows': 10,
-        'style': 'font-family: monospace;'
+        'style': 'font-family: monospace;',
     }
 }
-    form_overrides = {
-        'body': TextAreaField
-    }
-  
+    form_overrides = dict(body=TextAreaField)
+    can_view_details = True
+    
     def is_accessible(self):
         try:
             if current_user.admin:
@@ -115,6 +114,7 @@ class UserPostsView(ModelView):
 
 class ProductView(ModelView):
     column_display_pk = True
+    can_view_details = True
     column_labels = dict(
         name="товар",
         image="изображение",
@@ -175,7 +175,7 @@ class OrderuserView(ModelView):
 class BascetView(ModelView):
     column_display_pk = True
     column_hide_backrefs = False
-    column_list = ['user_id', 'product_id']
+    column_list = ['id','user_id', 'product_id']
     column_labels = dict(
         user_id='владелец',
         product_id='товар'

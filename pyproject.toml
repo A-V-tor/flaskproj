@@ -21,6 +21,7 @@ python-dotenv = "^0.21.0"
 itsdangerous = "^2.1.2"
 Flask-BabelEx = "^0.9.4"
 Pillow = "^9.3.0"
+Flask-CKEditor = "^0.4.6"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.3"

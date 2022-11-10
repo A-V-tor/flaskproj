@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, PasswordField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Email, Length
+from flask_ckeditor import CKEditorField
 
 
 class FormReg(FlaskForm):
@@ -63,7 +64,7 @@ class PostUser(FlaskForm):
     title = StringField(
         "Заголовок отзыва", validators=[DataRequired(), Length(min=4, max=50)]
     )
-    body = TextAreaField(
+    body = CKEditorField(
         "Комментарий", validators=[DataRequired(), Length(min=4, max=250)]
     )
     submit = SubmitField("Оставить отзыв")
