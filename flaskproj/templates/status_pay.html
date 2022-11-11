@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
 {% include 'navbar.html' %}
+<center>
 {% if pay %}
-  {{ pay }}
+Заказ <h3>{{ id }}</h3> {{ pay }}
 {% else %}
-Не оплачено
+Заказ <h3>{{ id }}</h3> не оплачен
 {% endif %}
+</center>
 {% endblock %}

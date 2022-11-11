@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
 {% include 'navbar.html' %}
-<h2>
-    <center>История заказов</center>
-</h2>
+
 
 <div class="order">
+    <h2>
+        История заказов
+    </h2>
+    <br>
     <dl>
         {% for item in order_list.items %}
         <dt>
@@ -13,22 +15,32 @@
         </dt>
         <div class="in-order">
             <dd>
-                {{item.date}} </br> {% for i in item.list_product %}
-                <h4>товар {{i[0]}}</h4>
-                цена: {{i[1]}}, кол-во {{i[2]}} (ед.) </br>
+                {{item.date}} </br>
+                {% for i in item.list_product %}
+                <h4> {{i[0]}}</h4>
+                    {{i[1]}} $,  {{i[2]}} (ед.) </br>
                 {% endfor %}
-                <h4>Сумма заказа: {{item.order_price}}</h4></br></br>
+                
+                <h3><a href="/status-pay/{{item.invoice_id}}">Статус заказа</a></h3>
+                <h4>Сумма заказа: {{item.order_price}} $</h4></br></br>
             </dd>
         </div>
         {% endfor %}
     </dl>
-    <h4>{% if order_list.has_prev %}
-        <a href="{{ url_for('order_user', page = order_list.prev_num) }}">
-            << Назад</a>{% endif %}
-                {% if order_list.has_next %}
-                <a href="{{ url_for('order_user', page = order_list.next_num) }}">Вперед
-                    >></a>
-                {% endif %}
+    <h3>
+        {% for i in order_list.iter_pages() %}
+            <span id="page"><a href="{{ url_for('order_user',page=i) }}">{{i}}</a></span>
+        {% endfor %}
+    </h3>
+    <h4>
+        {% if order_list.has_prev %}
+            <a href="{{ url_for('order_user', page = order_list.prev_num) }}" id="page-left">
+            << Назад</a>
+        {% endif %}
+        {% if order_list.has_next %}
+            <a href="{{ url_for('order_user', page = order_list.next_num) }}">Вперед
+            >></a>
+        {% endif %}
     </h4>
 </div>
 {% endblock %}

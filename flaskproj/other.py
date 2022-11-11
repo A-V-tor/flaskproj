@@ -86,7 +86,7 @@ def get_back_product_item(lst, current_item):
             except:
                 return lst[-1]
 
-def get_data_list_for_index(data_product, entries_bascet_user):
+def get_list_of_actions(data_product, entries_bascet_user):
     """
     Формирование списка с именными кортежами обозначающие продукты
 
@@ -108,7 +108,7 @@ import requests
 
 pay_login = 'demo'
 pay_password = 'demo'
-pay_domain = 'http://demo.paykeeper.ru'
+pay_domain = 'https://demo.paykeeper.ru'
 
             
 def get_encoding_logpass(): 
@@ -116,7 +116,6 @@ def get_encoding_logpass():
     logpass__bytes = logpass_for_decoding.encode('ascii')
     base64_bytes = base64.b64encode(logpass__bytes)
     base64_logpass = base64_bytes.decode('ascii')
-    print('base64_logpass',base64_logpass)
     return base64_logpass
 
 HEADERS = {
@@ -129,7 +128,6 @@ def create_payment(order, cost):
     url = f'{pay_domain}/info/settings/token/'
     sess = requests.Session()
     response = sess.get(url, headers=HEADERS)
-    print('response',response.text)
     try:
         response_json = response.json()
     except Exception:
@@ -137,7 +135,6 @@ def create_payment(order, cost):
 
     if response_json:
         token = response_json.get('token')
-        print('token',token)
         # при наличии токена создаем заказ и отправляем для формирования ссылки на оплату
         if token:
             url = f'{pay_domain}/change/invoice/preview/'

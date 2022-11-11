@@ -283,19 +283,24 @@ p:before {
 /* история заказов */
 
 .order {
-    margin-left: 20%;
+    margin-left: 30%;
     margin-top: 2%;
     position: absolute;
 }
 
 .in-order {
-    width: 200%;
-    margin-left: 20%;
+    width: 100%;
+    margin-left: 2%;
+    padding-left: 3%;
     margin-top: 0%;
+    padding-top: 3%;
     background-color: #abdff0;
     opacity: 0.7;
     border-radius: 10px;
 }
+
+#page {padding-left: 10%;}
+#page-left {padding-right: 25%;}
 
 /* страница тренда */
 
@@ -325,7 +330,7 @@ p:before {
     margin-top: -30.6%;
     background-color: #f2f2f2;
     width: 60%;
-    height: 440px;
+    height: 445px;
     border: 1px;
     border-radius: 20px;
 }

@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from flask import abort, flash, redirect, render_template, request, session, url_for
 from flask_bootstrap import Bootstrap
+from sqlalchemy import func
 from flask_mail import Message
 from flask_login import (
     LoginManager,
@@ -31,7 +32,7 @@ from .other import (
     get_next_product_item,
     set_new_amount,
     set_trend,
-    get_data_list_for_index,
+    get_list_of_actions,
     create_payment,
     check_status,
     generate_confirmation_token,
@@ -64,7 +65,7 @@ def index_main():
     data_product = Product.query.filter_by().order_by(Product.name).all()
     if current_user.is_authenticated:
         entries_bascet_user = Bascet.query.filter_by(user_id=current_user.id).all()
-        lst = get_data_list_for_index(data_product, entries_bascet_user)
+        lst = get_list_of_actions(data_product, entries_bascet_user)
         if "product_name" in request.form:
             name_product = [request.form["product_name"]]
             bascet_write = Bascet(
@@ -135,19 +136,20 @@ def confirm_email(token):
 @app.route("/description/<item>", methods=["POST", "GET"])
 @login_required
 def index_description(item):
-    data_product = Product.query.filter_by(name=item).order_by(Product.name).first()
+    current_product = Product.query.filter_by(name=item).order_by(Product.name).first()
     all_product = Product.query.order_by(Product.name).all()
-    next_item = get_next_product_item(all_product, data_product)
-    back_item = get_back_product_item(all_product, data_product)
-    name_product = data_product.id
+    next_item = get_next_product_item(all_product, current_product)
+    back_item = get_back_product_item(all_product, current_product)
+    name_product = current_product.id
     limit_entries = Bascet.query.filter_by(
         user_id=current_user.id, product_id=int(name_product)
     ).all()
+
     if len(limit_entries) > 0:
         return render_template(
             "description.html",
             title="Товар",
-            data_product=data_product,
+            data_product=current_product,
             next_item=next_item,
             back_item=back_item,
             limit=True,
@@ -161,7 +163,7 @@ def index_description(item):
 
     return render_template(
         "description.html",
-        data_product=data_product,
+        data_product=current_product,
         next_item=next_item,
         back_item=back_item,
         title="Товар",
@@ -212,6 +214,10 @@ def remove_product_for_main():
         return redirect(
             url_for("index_description", item=Product.query.get(id_product).name)
         )
+    elif 'productname' in request.form:
+        return redirect(
+            url_for('product_search')
+        )
     return redirect(url_for("index_shopping_basket"))
 
 
@@ -254,9 +260,10 @@ def new_psw():
 @app.route("/trend", methods=["POST", "GET"])
 @login_required
 def trend():
-    trend_product = TrendingProduct.query.order_by(TrendingProduct.item.desc()).first()
+    trend_product = db.session.execute(db.select(TrendingProduct).order_by(TrendingProduct.item.desc())).scalar()
+    product = db.session.execute(db.select(Product).filter_by(id=trend_product.product_id)).scalar()
     return render_template(
-        "trend.html", trend=Product.query.get(trend_product.product_id)
+        "trend.html", trend=product
     )
 
 
@@ -279,11 +286,30 @@ def post_write():
 
 
 @app.route('/search',methods=["POST","GET"])
+@login_required
 def product_search():
-    print(request.form["search"])
-    data_for_find = request.form["search"]
-    entries_search_product = Product.query.filter(Product.name.ilike(f'%{data_for_find}%')).all()
-    return render_template('search.html',title='Результат поиска', data_product=entries_search_product)
+    '''
+    Слово записывается в словарь сессий
+
+    при первом проходе функции. Формируются именованные 
+
+    кортежи для добавления, удаления.
+
+    '''
+    try:
+        session['search'] = request.form["search"]
+    except:
+        pass
+    if 'productname' in request.form:
+        product_id = request.form.get("productname")
+        db.session.add(Bascet(user_id=current_user.id,product_id=product_id))
+        db.session.commit()
+        return redirect(url_for(request.args.get('next') or 'product_search'))
+    entries_search_product = db.session.execute(db.select(Product).filter(Product.name.ilike(f'%{session["search"]}%'))).scalars()
+    entries_bascet_user = Bascet.query.filter_by(user_id=current_user.id).all()
+    list_data_products=[i for i in entries_search_product]
+    lst = get_list_of_actions(list_data_products, entries_bascet_user)
+    return render_template('search.html',title='Результат поиска', data_product=lst)
 
 
 @app.route('/bascet',methods=["POST","GET"])
@@ -331,7 +357,6 @@ def index_shopping_basket():
             .all()[-1]
         )
         resp = create_payment(order_number,total_price)
-        
         db.session.commit()
         return redirect(resp)
 
@@ -344,17 +369,18 @@ def index_shopping_basket():
     )
 
 
-@app.route('/status-pay',methods=["POST","GET"])
+@app.route('/status-pay/<id>',methods=["POST","GET"])
 @login_required
-def status_pay():
+def status_pay(id):
     # https://demo.paykeeper.ru/payments/settings  
     pay = False
-    order = Orderuser.query.filter_by(user_id=current_user.id).order_by(Orderuser.date.desc()).first_or_404()
+    order = db.session.execute(db.select(Orderuser).filter_by(user_id=current_user.id,invoice_id=id)).scalar()
+    print(order)
     if check_status(order) == 'paid':
-        pay = 'Оплачено'
-    return render_template('status_pay.html',pay=pay)
+        pay = 'Оплачен'
+    return render_template('status_pay.html',pay=pay,id=id)
 
 
-@app.errorhandler(404)
-def pageNot(error):
-    return redirect(url_for("index_autorization"))
+# @app.errorhandler(404)
+# def pageNot(error):
+#     return redirect(url_for("index_autorization"))
