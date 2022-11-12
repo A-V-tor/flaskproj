@@ -4,7 +4,7 @@
 
 
 <div class="main-lst">
-    <h2>test-shop.test</h2>
+    <h2><span class="badge badge-info" id="title">test-shop.test</span></h2>
     <br>
     <hr>
     {% if current_user.is_authenticated %}
@@ -13,7 +13,7 @@
     <div class="list">
         <ul>
             <li id="li1">{{i[0].name}}</li>
-            <li><a href="/description/{{i[0].name}}"><img src="/static/{{i[0].image}}" width="80" height="80"></a></li>
+            <li><a href="/description/{{loop.index}}"><img src="/static/{{i[0].image}}" width="80" height="80"></a></li>
             <li id="price"><p>{{i[0].price}} $</p></li>
             {% if i.add %}
             <li>

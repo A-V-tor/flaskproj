@@ -27,20 +27,22 @@
         </div>
         {% endfor %}
     </dl>
-    <h3>
-        {% for i in order_list.iter_pages() %}
-            <span id="page"><a href="{{ url_for('order_user',page=i) }}">{{i}}</a></span>
-        {% endfor %}
-    </h3>
-    <h4>
-        {% if order_list.has_prev %}
-            <a href="{{ url_for('order_user', page = order_list.prev_num) }}" id="page-left">
-            << Назад</a>
-        {% endif %}
-        {% if order_list.has_next %}
-            <a href="{{ url_for('order_user', page = order_list.next_num) }}">Вперед
-            >></a>
-        {% endif %}
-    </h4>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+          {% if order_list.has_prev %}
+            <li class="page-item">
+              <a class="page-link" href="{{ url_for('order_user', page = order_list.prev_num) }}" tabindex="-1">Назад</a>
+            </li>
+          {% endif %}
+          {% for i in order_list.iter_pages() %}
+            <li class="page-item"><a class="page-link" href="{{ url_for('order_user',page=i) }}">{{ i }}</a></li>
+          {% endfor %}
+          {% if order_list.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="{{ url_for('order_user', page = order_list.next_num) }}">Вперед</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
 </div>
 {% endblock %}

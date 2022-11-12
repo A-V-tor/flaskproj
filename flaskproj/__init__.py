@@ -17,6 +17,7 @@ ckeditor = CKEditor(app)
 
 app.config["SECRET_KEY"] = os.getenv('SECRET_KEY')
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://a-v-tor@localhost/mybase"
+app.config["SQLALCHEMY_RECORD_QUERIES"] = True # только для режима отладки, помогает залезть в запрос
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["FLASK_ADMIN_SWATCH"] = "cerulean"
 app.config['CSRF_ENABLED'] = True 

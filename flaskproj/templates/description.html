@@ -4,34 +4,45 @@
 
 
 <div class="product">
+    {% for i in pr.items %}
     <div class="pr">
-        <img src="/static/{{data_product.image}}" alt="" width="440" height="440" />
+        <img src="/static/{{i.image}}" alt="" width="440" height="440" />
     </div>
-    
     <div class="description">
         <br>
-        <center><h2>{{data_product.name}}</h2></center>
+        <center><h2>{{i.name}}</h2></center>
         <hr>
-        <p>{{data_product.product_story}} 
+        <p>{{i.product_story}} 
         <hr>
-        <strong>{{data_product.price}} $</strong>
+        <strong>{{i.price}} $</strong>
         {% if  current_user.is_authenticated %}
-        {% if  limit!=True %}
+            {% if  limit!=True %}
         <form  action="#" method="post">
-            <td></br><button type="submit" name="productname" value="" class="but-2">Добавить &nbsp; </button></td>
+            <button type="submit" name="productname" value="{{i.id}}" class="but-desc">Добавить</button>
         </form>
-        {% else %}
+            {% else %}
         <form action="/remove" method="post">
-            <td></br><button type="submit" name="product_remove_for_description" value="{{data_product.id}}" class="but-2">Удалить
-                    &nbsp;
-                </button></td>
+            <button type="submit" name="product_remove_for_description" value="{{i.id}}" class="but-desc">Удалить</button>
         </form>
-        
-        {% endif %}{% endif %}
-        <form action="/">
-            <button class="but-3" value="close" name="close">На главную</button>
-        </form>
-    </div><a class="next-a" href="/description/{{next_item.name}}"> >>>> </a>  <a class="next-a2" href="/description/{{back_item.name}}"> <<<< </a>
-</div>
-
+            {% endif %}
+        {% endif %}
+    </div>
+    {% endfor %}
+    <center>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            {% if pr.has_prev %}
+                        <li class="page-item ">
+                        <a class="page-link" href="{{ url_for('index_description', page = pr.prev_num) }}" tabindex="-1">Назад</a>
+                        </li>
+            {% endif %}
+            {% if pr.has_next %}
+                        <li class="page-item">
+                        <a class="page-link" href="{{ url_for('index_description', page = pr.next_num) }}">Вперед</a>
+                        </li>
+            {% endif %}
+        </ul>
+    </nav>
+    </center>
+    </div>
 {% endblock %} 

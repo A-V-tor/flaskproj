@@ -13,14 +13,13 @@ from flask_login import (
 )
 
 from flaskproj import app, db, mail, babel, ckeditor
-
-from .forms import FormAddCard, FormAvt, FormReg, New_Psw, PostUser
+from flask_sqlalchemy import get_debug_queries # просмотр параметров запроса
+from .forms import  FormAvt, FormReg, New_Psw, PostUser
 from .models import (
     Bascet,
     Orderuser,
     Product,
     TrendingProduct,
-    Usercard,
     UserPosts,
     Userprofile,
 )
@@ -57,6 +56,7 @@ def get_locale():
     if request.args.get('lang'):
         session['lang'] = request.args.get('lang')
     return session.get('lang', 'ru')
+
 
 
 @app.route("/", methods=["POST", "GET"])
@@ -133,39 +133,35 @@ def confirm_email(token):
     return redirect(url_for('index_autorization'))
 
 
-@app.route("/description/<item>", methods=["POST", "GET"])
+@app.route("/description/<int:page>", methods=["POST", "GET"])
 @login_required
-def index_description(item):
-    current_product = Product.query.filter_by(name=item).order_by(Product.name).first()
-    all_product = Product.query.order_by(Product.name).all()
-    next_item = get_next_product_item(all_product, current_product)
-    back_item = get_back_product_item(all_product, current_product)
-    name_product = current_product.id
+def index_description(page):
+    session['page'] = page
+    product = Product.query.filter_by().order_by(Product.name).paginate(page, 1, False)
+    [item] = [i.id for i in product.items]
+    print(item)
     limit_entries = Bascet.query.filter_by(
-        user_id=current_user.id, product_id=int(name_product)
+        user_id=current_user.id, product_id=item
     ).all()
-
+    # print(get_debug_queries())
     if len(limit_entries) > 0:
         return render_template(
             "description.html",
+            pr=product,
             title="Товар",
-            data_product=current_product,
-            next_item=next_item,
-            back_item=back_item,
             limit=True,
         )
     
     if "productname" in request.form:
-        bascet_write = Bascet(user_id=current_user.id, product_id=int(name_product))
+        product_id = request.form.get('productname')
+        bascet_write = Bascet(user_id=current_user.id, product_id=product_id)
         db.session.add(bascet_write)
         db.session.commit()
-        return redirect(url_for("index_description", item=item))
+        return redirect(url_for("index_description", page=page))
 
     return render_template(
         "description.html",
-        data_product=current_product,
-        next_item=next_item,
-        back_item=back_item,
+        pr=product,
         title="Товар",
     )
 
@@ -200,25 +196,29 @@ def user_exit():
 @app.route("/remove", methods=["POST", "GET"])
 @login_required
 def remove_product_for_main():
-    id_product = [i for i in request.form.values()]
-    product_for_remove = Bascet.query.filter_by(
-        user_id=current_user.id, product_id=int(*id_product)
-    ).first()
-    db.session.delete(product_for_remove)
-    db.session.commit()
-    if 'product_remove' in request.form:
-        return redirect(request.args.get("next") or
-            url_for("index_main")
-        )
-    elif 'product_remove_for_description' in request.form:
-        return redirect(
-            url_for("index_description", item=Product.query.get(id_product).name)
-        )
-    elif 'productname' in request.form:
-        return redirect(
-            url_for('product_search')
-        )
-    return redirect(url_for("index_shopping_basket"))
+    try:
+        id_product = [i for i in request.form.values()]
+        product_for_remove = Bascet.query.filter_by(
+            user_id=current_user.id, product_id=int(*id_product)
+        ).first()
+        db.session.delete(product_for_remove)
+        db.session.commit()
+    except:
+        pass
+    finally:
+        if 'product_remove' in request.form:
+            return redirect(request.args.get("next") or
+                url_for("index_main")
+            )
+        elif 'product_remove_for_description' in request.form:
+            return redirect(
+                url_for("index_description", page=session['page'])
+            )
+        elif 'productname' in request.form:
+            return redirect(
+                url_for('product_search')
+            )
+        return redirect(url_for("index_shopping_basket"))
 
 
 @app.route("/exit_in_bascet", methods=["POST", "GET"])
@@ -379,6 +379,11 @@ def status_pay(id):
     if check_status(order) == 'paid':
         pay = 'Оплачен'
     return render_template('status_pay.html',pay=pay,id=id)
+
+
+@app.route('/about',methods=["POST","GET"])
+def about():
+    return render_template('about.html')
 
 
 # @app.errorhandler(404)

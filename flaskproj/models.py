@@ -17,7 +17,6 @@ class Userprofile(db.Model, UserMixin):
     admin = db.Column(db.Boolean, nullable=False, default=False)
     confirmed = db.Column(db.Boolean, nullable=False, default=False)
     user_bascet = relationship("Bascet", cascade="all, delete")
-    user_card = relationship("Usercard", cascade="all, delete")
     user_order = relationship("Orderuser", cascade="all, delete")
     user_post = relationship("UserPosts", cascade="all, delete")
 
@@ -44,20 +43,6 @@ class Bascet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, ForeignKey("userprofile.id"))
     product_id = db.Column(db.Integer, ForeignKey("product.id"))
-
-
-class Usercard(db.Model):
-    """Модель пользовательских карт оплаты"""
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, ForeignKey("userprofile.id"))
-    surname = db.Column(db.String(80))
-    firstname = db.Column(db.String(80))
-    patronymic = db.Column(db.String(80))
-    number_card = db.Column(db.String(20), unique=True)
-    validity = db.Column(db.String(5))
-    secret_code = db.Column(db.String(4))
-    balance = db.Column(db.Float)
 
 
 class Orderuser(db.Model):
