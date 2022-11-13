@@ -23,6 +23,6 @@ jobs:
           
       - name: Install dependencies
         run: |
-          pip install black
+          pip install flake8
       - name: Formatting
-        run: black flaskproj
+        run:  flake8 flaskproj
