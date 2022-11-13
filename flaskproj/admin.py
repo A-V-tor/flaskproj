@@ -1,6 +1,5 @@
 import os.path as op
 import os
-import random
 
 from wtforms import TextAreaField
 from flask_admin import Admin, AdminIndexView, BaseView, expose
@@ -21,13 +20,15 @@ class MyAdminIndexView(AdminIndexView):
                 return True
         except:
             pass
-    
+
 
 admin = Admin(
     app,
     name="",
     template_mode="bootstrap3",
-    index_view=MyAdminIndexView(name="Админка",menu_icon_type='glyph', menu_icon_value='glyphicon-home'),
+    index_view=MyAdminIndexView(
+        name="Админка", menu_icon_type="glyph", menu_icon_value="glyphicon-home"
+    ),
 )
 
 
@@ -41,10 +42,10 @@ class AnalyticsView(BaseView):
         return self.render(
             "admin/analytics_index.html",
             user_amount=len(user_amount),
-            products_amount = len(products_amount),
-            user_amount_confirmed = len(user_amount_confirmed),
-            user_posts = len(user_posts),
-            )
+            products_amount=len(products_amount),
+            user_amount_confirmed=len(user_amount_confirmed),
+            user_posts=len(user_posts),
+        )
 
     def is_accessible(self):
         try:
@@ -73,7 +74,6 @@ class UserprofileView(ModelView):
     )
     create_modal = True
     edit_modal = True
- 
 
     def is_accessible(self):
         try:
@@ -81,8 +81,6 @@ class UserprofileView(ModelView):
                 return True
         except:
             pass
-
-
 
 
 class UserPostsView(ModelView):
@@ -96,14 +94,14 @@ class UserPostsView(ModelView):
     edit_modal = True
     column_descriptions = dict(user_name="автор отправитель")
     form_widget_args = {
-    'body': {
-        'rows': 10,
-        'style': 'font-family: monospace;',
+        "body": {
+            "rows": 10,
+            "style": "font-family: monospace;",
+        }
     }
-}
     form_overrides = dict(body=TextAreaField)
     can_view_details = True
-    
+
     def is_accessible(self):
         try:
             if current_user.admin:
@@ -128,21 +126,14 @@ class ProductView(ModelView):
     column_editable_list = ["price"]
     create_modal = True
     edit_modal = True
-    form_overrides = {
-        'product_story': TextAreaField
-    }
+    form_overrides = {"product_story": TextAreaField}
     form_widget_args = {
-    'product_story': {
-        'rows': 5,
-        'style': 'font-family: monospace;'
+        "product_story": {"rows": 5, "style": "font-family: monospace;"}
     }
-}
 
-    path = op.abspath(os.getcwd() + '/flaskproj/static')
-    form_extra_fields = {
-        'image': form.ImageUploadField('изображение',base_path=path)
-    }
-   
+    path = op.abspath(os.getcwd() + "/flaskproj/static")
+    form_extra_fields = {"image": form.ImageUploadField("изображение", base_path=path)}
+
     def is_accessible(self):
         try:
             if current_user.admin:
@@ -172,14 +163,12 @@ class OrderuserView(ModelView):
         except:
             pass
 
+
 class BascetView(ModelView):
     column_display_pk = True
     column_hide_backrefs = False
-    column_list = ['id','user_id', 'product_id']
-    column_labels = dict(
-        user_id='владелец',
-        product_id='товар'
-    )
+    column_list = ["id", "user_id", "product_id"]
+    column_labels = dict(user_id="владелец", product_id="товар")
 
     def is_accessible(self):
         try:
@@ -190,11 +179,33 @@ class BascetView(ModelView):
 
 
 path = op.join(op.dirname(__file__), "static/")
-admin.add_view(AnalyticsView(name="Аналитика", endpoint="analytics",menu_icon_type='glyph', menu_icon_value='glyphicon-eye-open'))
-admin.add_view(FileAdmin(path, "/static/", name="Загрузка файлов",menu_icon_type='glyph', menu_icon_value='glyphicon-circle-arrow-down'))
-admin.add_view(UserprofileView(Userprofile, db.session, name="Пользователи",menu_icon_type='glyph', menu_icon_value='glyphicon-user'))
+admin.add_view(
+    AnalyticsView(
+        name="Аналитика",
+        endpoint="analytics",
+        menu_icon_type="glyph",
+        menu_icon_value="glyphicon-eye-open",
+    )
+)
+admin.add_view(
+    FileAdmin(
+        path,
+        "/static/",
+        name="Загрузка файлов",
+        menu_icon_type="glyph",
+        menu_icon_value="glyphicon-circle-arrow-down",
+    )
+)
+admin.add_view(
+    UserprofileView(
+        Userprofile,
+        db.session,
+        name="Пользователи",
+        menu_icon_type="glyph",
+        menu_icon_value="glyphicon-user",
+    )
+)
 admin.add_view(ProductView(Product, db.session, name="Товары"))
 admin.add_view(OrderuserView(Orderuser, db.session, name="Заказы"))
 admin.add_view(UserPostsView(UserPosts, db.session, name="Обратная связь"))
 admin.add_view(BascetView(Bascet, db.session, name="Корзина товаров"))
-

@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from flask import abort, flash, redirect, render_template, request, session, url_for
+from flask import flash, redirect, render_template, request, session, url_for
 from flask_bootstrap import Bootstrap
 from flask_mail import Message
 from flask_login import (
@@ -12,8 +12,8 @@ from flask_login import (
 )
 
 from flaskproj import app, db, mail, babel
-from flask_sqlalchemy import get_debug_queries # просмотр параметров запроса
-from .forms import  FormAvt, FormReg, New_Psw, PostUser
+#from flask_sqlalchemy import get_debug_queries   просмотр параметров запроса
+from .forms import FormAvt, FormReg, New_Psw, PostUser
 from .models import (
     Bascet,
     Orderuser,
@@ -32,7 +32,7 @@ from .other import (
     create_payment,
     check_status,
     generate_confirmation_token,
-    confirm_token
+    confirm_token,
 )
 
 Bootstrap(app)
@@ -43,7 +43,6 @@ login_manager.login_message = " Нужно пройти процесс авто�
 login_manager.login_message_category = "error"
 
 
-
 @login_manager.user_loader
 def load_user(user):
     return Userprofile.query.get(user)
@@ -51,14 +50,14 @@ def load_user(user):
 
 @babel.localeselector
 def get_locale():
-    if request.args.get('lang'):
-        session['lang'] = request.args.get('lang')
-    return session.get('lang', 'ru')
+    if request.args.get("lang"):
+        session["lang"] = request.args.get("lang")
+    return session.get("lang", "ru")
 
 
 @app.route("/", methods=["POST", "GET"])
 def index_main():
-    """ Обработка главной страницы """
+    """Обработка главной страницы"""
     data_product = Product.query.filter_by().order_by(Product.name).all()
     if current_user.is_authenticated:
         entries_bascet_user = Bascet.query.filter_by(user_id=current_user.id).all()
@@ -70,7 +69,7 @@ def index_main():
             )
             db.session.add(bascet_write)
             db.session.commit()
-            return redirect(request.args.get("next") or url_for('index_main'))
+            return redirect(request.args.get("next") or url_for("index_main"))
 
         return render_template(
             "index.html",
@@ -97,9 +96,11 @@ def index_registration():
             db.session.add(user)
             db.session.commit()
             token = generate_confirmation_token(user.mail)
-            confirm_url = url_for('confirm_email', token=token, _external=True)
-            html = render_template('activ.html',confirm_url=confirm_url )
-            msg = Message("Подтверждение регистрации",  recipients=[os.getenv('test_mail')])
+            confirm_url = url_for("confirm_email", token=token, _external=True)
+            html = render_template("activ.html", confirm_url=confirm_url)
+            msg = Message(
+                "Подтверждение регистрации", recipients=[os.getenv("test_mail")]
+            )
             msg.html = html
             mail.send(msg)
             flash("Вы зарегестрированы, проверьте почту!", category="succes")
@@ -113,27 +114,30 @@ def index_registration():
 
 @app.route("/confirm/<token>", methods=["POST", "GET"])
 def confirm_email(token):
-    ''' Подтверждение почтового ящика '''
+    """Подтверждение почтового ящика"""
     try:
         mail = confirm_token(token)
     except:
-        flash("Ссылка для подтверждения недействительна или срок ее действия истек.", category="error")
+        flash(
+            "Ссылка для подтверждения недействительна или срок ее действия истек.",
+            category="error",
+        )
         return redirect(url_for("index_registration"))
     user = Userprofile.query.filter_by(mail=mail).first_or_404()
     if user.confirmed:
-        flash('Аккаунт уже подтвержден. Пожалуйста, войдите.', category="succes")
+        flash("Аккаунт уже подтвержден. Пожалуйста, войдите.", category="succes")
     else:
         user.confirmed = True
         db.session.add(user)
         db.session.commit()
-        flash('Аккаунт подтвержден!', category="succes")
-    return redirect(url_for('index_autorization'))
+        flash("Аккаунт подтвержден!", category="succes")
+    return redirect(url_for("index_autorization"))
 
 
 @app.route("/description/<int:page>", methods=["POST", "GET"])
 @login_required
 def index_description(page):
-    session['page'] = page
+    session["page"] = page
     product = Product.query.filter_by().order_by(Product.name).paginate(page, 1, False)
     [item] = [i.id for i in product.items]
     print(item)
@@ -148,9 +152,9 @@ def index_description(page):
             title="Товар",
             limit=True,
         )
-    
+
     if "productname" in request.form:
-        product_id = request.form.get('productname')
+        product_id = request.form.get("productname")
         bascet_write = Bascet(user_id=current_user.id, product_id=product_id)
         db.session.add(bascet_write)
         db.session.commit()
@@ -203,18 +207,12 @@ def remove_product_for_main():
     except:
         pass
     finally:
-        if 'product_remove' in request.form:
-            return redirect(request.args.get("next") or
-                url_for("index_main")
-            )
-        elif 'product_remove_for_description' in request.form:
-            return redirect(
-                url_for("index_description", page=session['page'])
-            )
-        elif 'productname' in request.form:
-            return redirect(
-                url_for('product_search')
-            )
+        if "product_remove" in request.form:
+            return redirect(request.args.get("next") or url_for("index_main"))
+        elif "product_remove_for_description" in request.form:
+            return redirect(url_for("index_description", page=session["page"]))
+        elif "productname" in request.form:
+            return redirect(url_for("product_search"))
         return redirect(url_for("index_shopping_basket"))
 
 
@@ -257,11 +255,13 @@ def new_psw():
 @app.route("/trend", methods=["POST", "GET"])
 @login_required
 def trend():
-    trend_product = db.session.execute(db.select(TrendingProduct).order_by(TrendingProduct.item.desc())).scalar()
-    product = db.session.execute(db.select(Product).filter_by(id=trend_product.product_id)).scalar()
-    return render_template(
-        "trend.html", trend=product
-    )
+    trend_product = db.session.execute(
+        db.select(TrendingProduct).order_by(TrendingProduct.item.desc())
+    ).scalar()
+    product = db.session.execute(
+        db.select(Product).filter_by(id=trend_product.product_id)
+    ).scalar()
+    return render_template("trend.html", trend=product)
 
 
 @app.route("/post", methods=["POST", "GET"])
@@ -272,7 +272,7 @@ def post_write():
         post = UserPosts(
             date=datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
             title=request.form["title"],
-            body=request.form.get('body'),
+            body=request.form.get("body"),
             user_name=current_user.name,
             user_id=current_user.id,
         )
@@ -282,40 +282,40 @@ def post_write():
     return render_template("post.html", forma=forma)
 
 
-@app.route('/search',methods=["POST","GET"])
+@app.route("/search", methods=["POST", "GET"])
 @login_required
 def product_search():
-    '''
+    """
     Слово записывается в словарь сессий
 
-    при первом проходе функции. Формируются именованные 
+    при первом проходе функции. Формируются именованные
 
     кортежи для добавления, удаления.
 
-    '''
+    """
     try:
-        session['search'] = request.form["search"]
+        session["search"] = request.form["search"]
     except:
         pass
-    if 'productname' in request.form:
+    if "productname" in request.form:
         product_id = request.form.get("productname")
-        db.session.add(Bascet(user_id=current_user.id,product_id=product_id))
+        db.session.add(Bascet(user_id=current_user.id, product_id=product_id))
         db.session.commit()
-        return redirect(url_for(request.args.get('next') or 'product_search'))
-    entries_search_product = db.session.execute(db.select(Product).filter(Product.name.ilike(f'%{session["search"]}%'))).scalars()
+        return redirect(url_for(request.args.get("next") or "product_search"))
+    entries_search_product = db.session.execute(
+        db.select(Product).filter(Product.name.ilike(f'%{session["search"]}%'))
+    ).scalars()
     entries_bascet_user = Bascet.query.filter_by(user_id=current_user.id).all()
-    list_data_products=[i for i in entries_search_product]
+    list_data_products = [i for i in entries_search_product]
     lst = get_list_of_actions(list_data_products, entries_bascet_user)
-    return render_template('search.html',title='Результат поиска', data_product=lst)
+    return render_template("search.html", title="Результат поиска", data_product=lst)
 
 
-@app.route('/bascet',methods=["POST","GET"])
+@app.route("/bascet", methods=["POST", "GET"])
 @login_required
 def index_shopping_basket():
     order_number = False
-    entries_product = get_data_product_bascet(
-        current_user.id, Bascet, Product
-    )
+    entries_product = get_data_product_bascet(current_user.id, Bascet, Product)
     if "make_purchase" in request.form:
         list_product, total_price = get_data_list_product_and_total_price(
             [i.name for i in entries_product],
@@ -324,13 +324,13 @@ def index_shopping_basket():
         )
         current_amount = get_item([int(product[2]) for product in list_product])
         # переделать для сети чтобы изменение кол-ва происходила после успешной оплаты
-        check_data, trend_list = set_new_amount(current_amount, entries_product)  
+        check_data, trend_list = set_new_amount(current_amount, entries_product)
         if check_data is None and trend_list is None:
             return render_template(
                 "bascet.html",
                 name=current_user.name,
                 mail=current_user.mail,
-                data_product=entries_product, 
+                data_product=entries_product,
                 total_price=total_price,
                 title="Корзина товаров",
                 order_number=order_number,
@@ -343,7 +343,7 @@ def index_shopping_basket():
         [db.session.delete(rm) for rm in check_data]
         new_order = Orderuser(
             user_id=current_user.id,
-            date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), # ERROR d m Y
+            date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # ERROR d m Y
             list_product=list_product,
             order_price=total_price,
         )
@@ -353,7 +353,7 @@ def index_shopping_basket():
             .order_by(Orderuser.date)
             .all()[-1]
         )
-        resp = create_payment(order_number,total_price)
+        resp = create_payment(order_number, total_price)
         db.session.commit()
         return redirect(resp)
 
@@ -366,21 +366,23 @@ def index_shopping_basket():
     )
 
 
-@app.route('/status-pay/<id>',methods=["POST","GET"])
+@app.route("/status-pay/<id>", methods=["POST", "GET"])
 @login_required
 def status_pay(id):
-    # https://demo.paykeeper.ru/payments/settings  
+    # https://demo.paykeeper.ru/payments/settings
     pay = False
-    order = db.session.execute(db.select(Orderuser).filter_by(user_id=current_user.id,invoice_id=id)).scalar()
+    order = db.session.execute(
+        db.select(Orderuser).filter_by(user_id=current_user.id, invoice_id=id)
+    ).scalar()
     print(order)
-    if check_status(order) == 'paid':
-        pay = 'Оплачен'
-    return render_template('status_pay.html',pay=pay,id=id)
+    if check_status(order) == "paid":
+        pay = "Оплачен"
+    return render_template("status_pay.html", pay=pay, id=id)
 
 
-@app.route('/about',methods=["POST","GET"])
+@app.route("/about", methods=["POST", "GET"])
 def about():
-    return render_template('about.html')
+    return render_template("about.html")
 
 
 # @app.errorhandler(404)

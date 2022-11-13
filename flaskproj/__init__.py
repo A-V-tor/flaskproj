@@ -17,22 +17,22 @@ babel = Babel(app)
 ckeditor = CKEditor(app)
 qrcode = QRcode(app)
 
-app.config["SECRET_KEY"] = os.getenv('SECRET_KEY')
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://a-v-tor@localhost/mybase"
-app.config["SQLALCHEMY_RECORD_QUERIES"] = True # только для режима отладки, помогает залезть в запрос
+app.config[
+    "SQLALCHEMY_RECORD_QUERIES"
+] = True  # только для режима отладки, помогает залезть в запрос
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["FLASK_ADMIN_SWATCH"] = "cerulean"
-app.config['CSRF_ENABLED'] = True 
-app.config['MAIL_SERVER'] = 'smtp.yandex.ru'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.getenv('mail')
-app.config['MAIL_DEFAULT_SENDER'] = os.getenv('mail')
-app.config['MAIL_PASSWORD'] = os.getenv('psw_mail')
-app.config['CKEDITOR_PKG_TYPE'] = 'base'
-app.config['CKEDITOR_WIDTH'] = 880
-
-
+app.config["CSRF_ENABLED"] = True
+app.config["MAIL_SERVER"] = "smtp.yandex.ru"
+app.config["MAIL_PORT"] = 587
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USERNAME"] = os.getenv("mail")
+app.config["MAIL_DEFAULT_SENDER"] = os.getenv("mail")
+app.config["MAIL_PASSWORD"] = os.getenv("psw_mail")
+app.config["CKEDITOR_PKG_TYPE"] = "base"
+app.config["CKEDITOR_WIDTH"] = 880
 
 
 db = SQLAlchemy(app)
