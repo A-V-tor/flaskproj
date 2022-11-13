@@ -69,23 +69,6 @@ def set_trend(trending_product, trend_list):
         db.session.commit()
 
 
-def get_next_product_item(lst, current_item):
-    for n, i in enumerate(lst):
-        if i == current_item:
-            try:
-                return lst[n + 1]
-            except:
-                return lst[0]
-
-
-def get_back_product_item(lst, current_item):
-    for n, i in enumerate(lst):
-        if i == current_item:
-            try:
-                return lst[n - 1]
-            except:
-                return lst[-1]
-
 def get_list_of_actions(data_product, entries_bascet_user):
     """
     Формирование списка с именными кортежами обозначающие продукты

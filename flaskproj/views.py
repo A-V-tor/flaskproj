@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 from flask import abort, flash, redirect, render_template, request, session, url_for
 from flask_bootstrap import Bootstrap
-from sqlalchemy import func
 from flask_mail import Message
 from flask_login import (
     LoginManager,
@@ -12,7 +11,7 @@ from flask_login import (
     logout_user,
 )
 
-from flaskproj import app, db, mail, babel, ckeditor
+from flaskproj import app, db, mail, babel
 from flask_sqlalchemy import get_debug_queries # просмотр параметров запроса
 from .forms import  FormAvt, FormReg, New_Psw, PostUser
 from .models import (
@@ -24,11 +23,9 @@ from .models import (
     Userprofile,
 )
 from .other import (
-    get_back_product_item,
     get_data_list_product_and_total_price,
     get_data_product_bascet,
     get_item,
-    get_next_product_item,
     set_new_amount,
     set_trend,
     get_list_of_actions,
@@ -46,6 +43,7 @@ login_manager.login_message = " Нужно пройти процесс авто�
 login_manager.login_message_category = "error"
 
 
+
 @login_manager.user_loader
 def load_user(user):
     return Userprofile.query.get(user)
@@ -56,7 +54,6 @@ def get_locale():
     if request.args.get('lang'):
         session['lang'] = request.args.get('lang')
     return session.get('lang', 'ru')
-
 
 
 @app.route("/", methods=["POST", "GET"])
